@@ -125,3 +125,64 @@ The electrical case can support a Chapter 4 validation claim only after:
 
 Until those gates are met, this case is accurately described as a real-data
 feasibility and preprocessing result, not completed predictive validation.
+
+## Component 2 measured-loading instantiation
+
+The private Component 2 adapter is implemented in `caltech_component2.py` and
+invoked through `scripts/build_caltech_component2.py`. It accepts the frozen
+topology and the authorized five-minute magnitude/phasor probe as external
+inputs; neither credentials nor raw measurements are copied into this
+repository.
+
+At `2024-11-14T07:00:00`, electrical reduction produces the 13-node, 12-edge
+weak component supplied by `gp_1`. The measurement roles are fixed and audited:
+
+- `egauge_21`: source-side measurement on the Component 2 feeder;
+- `egauge_3`, `egauge_7`, `egauge_9`, `egauge_11`, and `egauge_13`: terminal
+  load measurements;
+- `egauge_19`: excluded neighboring-feeder measurement; and
+- `egauge_15`: recorded as unavailable for the selected window.
+
+The importer aligns each voltage and current phasor to the shared capture
+timestamp, rejecting a case when any nearest-sample offset exceeds the
+declared threshold. Complex power is reconstructed as
+
+$$
+S_{m,t}=\sum_{p=1}^{3}V_{m,p,t}I^*_{m,p,t}.
+$$
+
+Although topology metadata declares `Mains_Power` in watts, the downloaded
+raw values agree with the phasor reconstruction only when interpreted as
+kilowatts. The adapter reports bias, percentage error, and correlation under
+that explicit interpretation. Phasor-derived power remains the model input;
+the inconsistent register is used only as a cross-check.
+
+Terminal meter powers are aggregated over descendants to obtain branch load.
+The source transformer uses the direct source measurement. Transformer
+capacity uses the minimum declared kVA when the source supplies multiple
+candidate ratings; line capacity uses
+
+$$
+C_{line}=3V_{phase,nominal}I_{rating}/1000.
+$$
+
+The resulting electrical susceptibility is
+
+$$
+S_{ij}=\min(1,L_{ij}/C_{ij}),
+$$
+
+where electrical `L` is mean apparent power in kVA. `tau` starts at one.
+`B` starts at zero and must be injected independently by a controlled
+disturbance scenario. This separation prevents measured loading and voltage
+response from being silently counted twice.
+
+The unmetered `line_407` branch is preserved in the complete topology but
+excluded from the observable model subgraph. The source-minus-metered-load
+residual is reported as an unallocated diagnostic because it combines
+unobserved demand, losses, and measurement/calibration differences. Assigning
+the entire residual to `line_407` would be an unsupported imputation.
+
+Accordingly, this adapter supports a real-topology, real-loading GBBRPM
+instantiation and controlled propagation experiments. It does not satisfy the
+independent event-response validation gates above.

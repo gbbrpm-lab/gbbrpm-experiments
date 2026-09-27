@@ -6,3 +6,7 @@ __pycache__/
 build/
 dist/
 *.egg-info/
+.env
+dataset_api_credentials.json
+data_caltech*/
+results/electrical/caltech_component2_private/
