@@ -193,6 +193,7 @@ python tests/reproducibility_test.py
 python tests/generic_properties_test.py
 python tests/software_case_test.py
 python tests/electrical_case_test.py
+python tests/caltech_component2_test.py
 python tests/paper_outputs_test.py
 python tests/swmm_reference_test.py
 ```
@@ -410,6 +411,40 @@ case until electrical definitions of `B`, `S`, and `tau` are declared without
 leaking the observed outcome into both model input and validation target. See
 `docs/electrical_domain_case.md` for the complete protocol and validation
 gates.
+
+### Caltech Component 2 measured-loading adapter
+
+An optional private-data adapter converts the five-minute Component 2 probe
+into a complete reduced topology and a model-ready observable subgraph. Raw
+Caltech measurements, credentials, and private probe outputs remain outside
+version control. Run it against the external dataset checkout:
+
+```powershell
+python .\scripts\build_caltech_component2.py `
+  --topology-source "C:\path\to\digital-twin-dataset\sample_dataset.zip" `
+  --probe-source "C:\path\to\digital-twin-dataset\data_caltech_component2_probe"
+```
+
+The adapter uses `egauge_21` as the component source and meters 3, 7, 9, 11,
+and 13 as terminal loads. `egauge_19` is explicitly excluded because it
+belongs to the neighboring feeder, while unavailable `egauge_15` is retained
+in the audit table. It reconstructs complex three-phase power from aligned
+phasors and defines edge susceptibility as
+`min(1, mean apparent power / declared capacity)`.
+
+The topology metadata labels `Mains_Power` as watts, although its raw values
+agree with the reconstructed phasor power only when read as kilowatts. The
+adapter records that cross-check but uses phasor-derived power for model input,
+so the inconsistent register label is not silently trusted.
+
+The complete reduced component contains 13 nodes and 12 edges. The unmetered
+`line_407` branch remains in the complete topology with missing loading, but
+is excluded from the 12-node, 11-edge observable model subgraph. The source to
+metered-load residual is reported separately and is not assigned to that
+branch. Model nodes start with `B=0`, and controlled scenarios inject local
+disturbance independently; measured voltage is not reused as both input and
+validation outcome. This is a descriptive real-topology, real-loading
+instantiation, not predictive switching-event validation.
 
 ## Reproducible paper outputs
 
