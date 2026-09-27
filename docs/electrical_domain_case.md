@@ -186,3 +186,38 @@ the entire residual to `line_407` would be an unsupported imputation.
 Accordingly, this adapter supports a real-topology, real-loading GBBRPM
 instantiation and controlled propagation experiments. It does not satisfy the
 independent event-response validation gates above.
+
+## Controlled Component 2 experiments
+
+`scripts/run_caltech_component2_experiments.py` consumes only the private
+adapter's model-ready `model_nodes.csv` and `model_edges.csv`. It does not read
+credentials or raw waveforms. The suite freezes phasor-derived baseline
+loading and varies one declared mechanism at a time:
+
+1. a zero-`B` mathematical reference;
+2. root disturbance severity at 0.25, 0.50, 0.75, and 1.00;
+3. isolated `B=0.75` placement at each of the 12 observable nodes;
+4. uniform measured-load scaling at 0.50, 0.75, 1.00, 1.25, and 1.50 under
+   root `B=0.75`;
+5. uniform uncalibrated `tau` sensitivity at 0.00, 0.25, 0.50, 0.75, and
+   1.00 under root `B=0.75`; and
+6. `B=0.50` combinations across internal non-root nodes, including all 15
+   pairs and one all-internal case.
+
+This produces 43 controlled runs. Every run retains the complete node ranking,
+the tie-aware top-20% priority set, edge contributions, maximum and mean risk,
+network-wide risk sum, affected-node counts, and sink-specific summaries.
+
+The multi-source interpretation follows topology. Component 2 is an
+arborescence, so it contains no downstream reconvergence. Nested internal
+source pairs test the bounded combination of incoming propagated risk with a
+local disturbance at the receiving node. Parallel pairs test simultaneous
+coverage of separate branches. Neither is presented as evidence about
+reconvergent noisy-OR behavior, which remains covered by the synthetic network
+experiments.
+
+Five reproducible figures report baseline edge susceptibility, root-severity
+response, measured-load sensitivity, uniform-transmission sensitivity, and the
+network-wide effect of disturbance location. These are mechanism and
+sensitivity results on a real topology with real measured loading. They remain
+separate from independent event-response validation.

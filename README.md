@@ -194,6 +194,7 @@ python tests/generic_properties_test.py
 python tests/software_case_test.py
 python tests/electrical_case_test.py
 python tests/caltech_component2_test.py
+python tests/electrical_scenarios_test.py
 python tests/paper_outputs_test.py
 python tests/swmm_reference_test.py
 ```
@@ -445,6 +446,32 @@ branch. Model nodes start with `B=0`, and controlled scenarios inject local
 disturbance independently; measured voltage is not reused as both input and
 validation outcome. This is a descriptive real-topology, real-loading
 instantiation, not predictive switching-event validation.
+
+Run the controlled Component 2 experiment suite after building the private
+case:
+
+```powershell
+python .\scripts\run_caltech_component2_experiments.py
+```
+
+The suite contains 43 runs across six families:
+
+| Family | Runs | Controlled change |
+| --- | ---: | --- |
+| Zero-disturbance reference | 1 | `B=0`, measured loading, `tau=1` |
+| Root severity | 4 | Root `B` in 0.25, 0.50, 0.75, 1.00 |
+| Disturbance location | 12 | Isolated `B=0.75` at every observable node |
+| Measured-load scaling | 5 | Uniform `L` scale from 0.50 to 1.50 |
+| Uniform transmission | 5 | Uniform `tau` from 0.00 to 1.00 |
+| Multi-source | 16 | Internal non-root pairs plus all internal nodes |
+
+Outputs are written beneath
+`results/electrical/caltech_component2_private/experiments/` and include the
+complete node risks, edge contributions, scenario summaries, a manifest, and
+five PDF/PNG figure pairs. Nested multi-source cases exercise bounded
+local-plus-incoming aggregation; parallel cases exercise concurrent branch
+coverage. Because the observable topology is an arborescence, these cases are
+not described as reconvergence experiments.
 
 ## Reproducible paper outputs
 
