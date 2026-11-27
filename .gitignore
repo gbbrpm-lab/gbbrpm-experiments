@@ -10,3 +10,6 @@ dist/
 dataset_api_credentials.json
 data_caltech*/
 results/electrical/caltech_component2_private/
+# DPWH FOI-REQ-2026-7383 restricted drainage outputs (non-redistribution clause)
+data/drainage/dpwh_cdo_bitanag_kolambog/
+results/drainage/dpwh_private/
