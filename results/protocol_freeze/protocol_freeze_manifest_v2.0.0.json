@@ -1,0 +1,534 @@
+{
+  "domain_eligibility_gates": {
+    "electrical": {
+      "case_id": "electrical_caltech_socal28_component2",
+      "gate_a_details": "12-node arborescence (Component 2), 24 phasor snapshots, 43-scenario measured-L/C suite",
+      "gate_a_structural_readiness": "PASS",
+      "gate_b_details": "Telemetry covers a normal-operation window after the Nov 13, 2024 switching event; no fault-prediction claim.",
+      "gate_b_independent_outcome_validation": "FAIL",
+      "redistribution": "restricted_not_in_git"
+    },
+    "software": {
+      "case_id": "software_npm_express_4.18.2",
+      "gate_a_details": "71 exact package-version nodes, 128 reversed dependency edges, 1 weakly connected DAG, 7 OSV advisory roots (13 advisory matches)",
+      "gate_a_structural_readiness": "PASS",
+      "gate_b_details": "Cross-domain applicability and stochastic structural benchmark; OSV supplies local-disturbance inputs rather than independent outcomes.",
+      "gate_b_independent_outcome_validation": "N/A",
+      "redistribution": "public_in_git"
+    },
+    "urban_drainage": {
+      "case_id": "drainage_dpwh_cdo_bitanag_kolambog_v1",
+      "gate_a_details": "11 nodes, 11 edges, valid DAG, S_ij in [0.4639, 0.8471], Manning verification <1% error, J_AGORA_CONF reconvergence junction, Tier-2 B_i",
+      "gate_a_structural_readiness": "PASS",
+      "gate_b_details": "June 2025 DEO flooding hotspots are exploratory only; no independent field-flooding validation claim.",
+      "gate_b_independent_outcome_validation": "FAIL",
+      "redistribution": "restricted_not_in_git"
+    }
+  },
+  "environment": {
+    "cpu_count": 12,
+    "machine": "AMD64",
+    "os": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "matplotlib": "3.10.1",
+      "networkx": "3.4.2",
+      "numpy": "2.2.0",
+      "pandas": "2.2.3",
+      "pytest": "9.0.3",
+      "scipy": "1.15.2",
+      "swmm_toolkit": "0.17.0"
+    },
+    "python_version": "3.13.14",
+    "requirements_lock_file": "requirements-lock-v2.0.0.txt",
+    "requirements_lock_sha256": "9e5f00424928a58c29d3724b3e1f0970eba9c7e1a81ad1818dc73babc0b853e3"
+  },
+  "external_restricted_hashes": {
+    "data/drainage/dpwh_cdo_bitanag_kolambog/edges.csv": {
+      "bytes": 5777,
+      "filename": "edges.csv",
+      "redistribution": "restricted_not_in_git",
+      "sha256": "5c59841490fa568f3732614b8beaa5888e7a267162d4163f27b0fc2108a53596"
+    },
+    "data/drainage/dpwh_cdo_bitanag_kolambog/manifest.json": {
+      "bytes": 5473,
+      "filename": "manifest.json",
+      "redistribution": "restricted_not_in_git",
+      "sha256": "5c9de905eda4e2d0aaa12c2aea8b6c47748d3bdeb1668f086d44900b5d521952"
+    },
+    "data/drainage/dpwh_cdo_bitanag_kolambog/nodes.csv": {
+      "bytes": 2975,
+      "filename": "nodes.csv",
+      "redistribution": "restricted_not_in_git",
+      "sha256": "b53d7526d67d2d51b032adb767c3dd40a0d7b465bd2ecf6aadf1458a5b694d3f"
+    },
+    "results/electrical/caltech_component2_private/manifest.json": {
+      "bytes": 1728,
+      "filename": "manifest.json",
+      "redistribution": "restricted_not_in_git",
+      "sha256": "bd030df89f07fde2ea36e077b70c5fab50e12f3704dfeb569a0e948a653ed218"
+    }
+  },
+  "freeze_date_utc": "2026-11-27T17:07:34Z",
+  "freeze_tag": "v2.0.0-protocol-freeze",
+  "held_out_isolation": {
+    "dev_compute_pilot_feasible_without_reduction": true,
+    "dev_controls_all_hard_assertions_passed": true,
+    "dev_controls_bracket_violations_total": 0,
+    "dev_controls_empty_hoeffding_intersections_total_nodes": 1,
+    "dev_controls_false_certifications_total": 0,
+    "dev_controls_total_verified": 1304,
+    "dev_pilot_configs_timed": 54,
+    "eval_outcomes_inspected": false,
+    "eval_seeds_evaluated": 0,
+    "extrapolated_8worker_minutes": 4.38,
+    "extrapolated_8worker_minutes_exact": 4.383413077094963,
+    "extrapolated_single_core_minutes": 26.3,
+    "extrapolated_single_core_minutes_exact": 26.300478462569785,
+    "source_summaries": [
+      "results/dev_pilot/dev_compute_pilot_summary.json",
+      "results/dev_pilot/dev_controls_summary.json"
+    ]
+  },
+  "linked_repositories": {
+    "gbbrpm-experiments": {
+      "base_pre_freeze_commit_sha": "422dfdcfa38c18e168268c8f77da83263bc20c49",
+      "branch": "main",
+      "step4_merged_pr": "https://github.com/gbbrpm-lab/gbbrpm-experiments/pull/18",
+      "url": "https://github.com/gbbrpm-lab/gbbrpm-experiments"
+    },
+    "gbbrpm-manuscript": {
+      "branch": "main",
+      "commit_sha": "2aaf2e4c8b8e3a84fef11e40a6675a370f571a44",
+      "url": "https://github.com/gbbrpm-lab/gbbrpm-manuscript"
+    },
+    "gbbrpm-prototype": {
+      "branch": "main",
+      "commit_sha": "e99adf4a382479a0e50df875a3b358f9f152c4e9",
+      "step4_merged_pr": "https://github.com/gbbrpm-lab/gbbrpm-prototype/pull/7",
+      "url": "https://github.com/gbbrpm-lab/gbbrpm-prototype"
+    }
+  },
+  "protocol_version": "2.0.0",
+  "scenario_inventory": {
+    "express_4_18_2_stochastic": {
+      "advisory_roots": 7,
+      "b_settings": [
+        0.5,
+        1.0
+      ],
+      "edges": 128,
+      "nodes": 71,
+      "total": 12,
+      "weights": [
+        0.05,
+        0.1,
+        0.2,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    "heterogeneous_weight_dags": {
+      "b_settings": [
+        0.5,
+        1.0
+      ],
+      "dev_seeds": [
+        41
+      ],
+      "dev_total": 24,
+      "edge_ordering_rule": "UTF-8 SHA-256 of family|size|seed|source|destination|hetero-v1",
+      "eval_seeds": [
+        1001,
+        1002,
+        1003,
+        1004,
+        1005
+      ],
+      "eval_total": 120,
+      "exact_mean_weight": 0.2,
+      "families": [
+        "forward",
+        "layered",
+        "preferential_attachment"
+      ],
+      "sizes": [
+        20,
+        50,
+        100,
+        250
+      ],
+      "total": 144,
+      "weight_levels": [
+        0.1,
+        0.2,
+        0.3
+      ],
+      "weight_quarters": {
+        "bottom_quarter": 0.1,
+        "middle_half": 0.2,
+        "top_quarter": 0.3
+      }
+    },
+    "matched_branch_controls": {
+      "b": [
+        0.1,
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "conditions": [
+        "shared",
+        "independent"
+      ],
+      "ell": [
+        2,
+        4
+      ],
+      "independent": 280,
+      "m": [
+        1,
+        2,
+        4,
+        8
+      ],
+      "p": [
+        0.05,
+        0.1,
+        0.2,
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "reference_formula": "Eq. (3-15) exact closed-form",
+      "shared": 280,
+      "total": 560
+    },
+    "precision_audits": {
+      "b_settings": [
+        0.5,
+        1.0
+      ],
+      "eval_seed": 1001,
+      "families": [
+        "forward",
+        "layered",
+        "preferential_attachment"
+      ],
+      "mc_trials": 1000000,
+      "sizes": [
+        20,
+        50,
+        100,
+        250
+      ],
+      "total": 48,
+      "weights": [
+        0.05,
+        0.1
+      ]
+    },
+    "totals": {
+      "dev_controls_evaluated": 1304,
+      "held_out_eval_scenarios": 3000,
+      "precision_audits": 48,
+      "primary_scenarios": 4316,
+      "total_edge_trials_billions": 88.8576
+    },
+    "uniform_generated_dags": {
+      "b_settings": [
+        0.5,
+        1.0
+      ],
+      "dev_seeds": [
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "dev_total": 720,
+      "eval_seeds": [
+        1001,
+        1002,
+        1003,
+        1004,
+        1005,
+        1006,
+        1007,
+        1008,
+        1009,
+        1010,
+        1011,
+        1012,
+        1013,
+        1014,
+        1015,
+        1016,
+        1017,
+        1018,
+        1019,
+        1020
+      ],
+      "eval_total": 2880,
+      "families": [
+        "forward",
+        "layered",
+        "preferential_attachment"
+      ],
+      "sizes": [
+        20,
+        50,
+        100,
+        250
+      ],
+      "total": 3600,
+      "weights": [
+        0.05,
+        0.1,
+        0.2,
+        0.25,
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "seed_manifest": {
+    "budget_fractions": [
+      0.1,
+      0.2,
+      0.3
+    ],
+    "candidate_set": "B_j == 0",
+    "dev_seeds": [
+      41,
+      42,
+      43,
+      44,
+      45
+    ],
+    "empty_intersection_policy": "record_without_repair",
+    "eval_seeds": [
+      1001,
+      1002,
+      1003,
+      1004,
+      1005,
+      1006,
+      1007,
+      1008,
+      1009,
+      1010,
+      1011,
+      1012,
+      1013,
+      1014,
+      1015,
+      1016,
+      1017,
+      1018,
+      1019,
+      1020
+    ],
+    "hetero_dev_seeds": [
+      41
+    ],
+    "hetero_eval_seeds": [
+      1001,
+      1002,
+      1003,
+      1004,
+      1005
+    ],
+    "hoeffding_alpha": 0.05,
+    "mc_backend": "numpy_uint64_bitpacked",
+    "mc_batch_size": 10000,
+    "mc_seed_rule": "derive_scenario_seed: big-endian uint32 from first 4 bytes of SHA-256(scenario_id.encode('utf-8'))",
+    "mc_trials_precision_audit": 1000000,
+    "mc_trials_primary": 100000,
+    "precision_audit_seed": 1001,
+    "robustness_seed": 41,
+    "tie_permutation_n_perms": 100,
+    "tie_permutation_seed": 140,
+    "tolerance_epsilon": 1e-12
+  },
+  "tracked_file_hashes": {
+    "data/electrical/socal28_sample/manifest.json": {
+      "bytes": 1378,
+      "category": "frozen_public_input",
+      "sha256": "2090ccc17c7c122ad312d435f6838ee72fa8e115d234b03f72f3f358c209226c"
+    },
+    "data/reconstructed/N1_edges.csv": {
+      "bytes": 103,
+      "category": "frozen_public_input",
+      "sha256": "4a8be98eee6b9e9337886f0f80c20a3f3d6c3ac56a18b44cea31f69e80e43035"
+    },
+    "data/reconstructed/N1_nodes.csv": {
+      "bytes": 40,
+      "category": "frozen_public_input",
+      "sha256": "00db801f17e356484633aeaf6d708efcb2cebb55a7cbdb17a3137d0c6c1acedc"
+    },
+    "data/reconstructed/N2_edges.csv": {
+      "bytes": 135,
+      "category": "frozen_public_input",
+      "sha256": "3d956c6da7a046694d5abb210d61976b2b7cd42aa6288854ba1b364265e76da4"
+    },
+    "data/reconstructed/N2_nodes.csv": {
+      "bytes": 50,
+      "category": "frozen_public_input",
+      "sha256": "fa7dcf7fcb38b2d7eac0789d3095dd7ba25ee122875b189c7369ac0e9c0cb9e3"
+    },
+    "data/reconstructed/N3_edges.csv": {
+      "bytes": 135,
+      "category": "frozen_public_input",
+      "sha256": "7962ef9a5a1270f0f4211d1da93f3122034a14632d035ccb5cd647f5451a59a8"
+    },
+    "data/reconstructed/N3_nodes.csv": {
+      "bytes": 53,
+      "category": "frozen_public_input",
+      "sha256": "9bff2f215e3413f2a41dfb624576b9d60bb343f45a346574a4f9837d8ae760a3"
+    },
+    "data/reconstructed/N4_edges.csv": {
+      "bytes": 135,
+      "category": "frozen_public_input",
+      "sha256": "b5ec9917dc3a3c58473057381c5a4d14715a91dbab33ef9876faca69c8442766"
+    },
+    "data/reconstructed/N4_nodes.csv": {
+      "bytes": 45,
+      "category": "frozen_public_input",
+      "sha256": "ad4c09ec67ec8359ef13014ece19631803ecc3dddbca6b36e80599d206316db9"
+    },
+    "data/reconstructed/N5_edges.csv": {
+      "bytes": 537,
+      "category": "frozen_public_input",
+      "sha256": "b935748c6d0421a4a4a960ebb93a592e719beab14c1e16aa52676043bc95768d"
+    },
+    "data/reconstructed/N5_nodes.csv": {
+      "bytes": 183,
+      "category": "frozen_public_input",
+      "sha256": "9615152b21dcb2bc33f87c95334f767d2a241887b315e675c5ea996d6a8ccbb2"
+    },
+    "data/reconstructed/network_manifest.json": {
+      "bytes": 2002,
+      "category": "frozen_public_input",
+      "sha256": "0ac5d5ec9991ac47ed124c062ea9984a6e4760f408747b791d1c987fff0c298f"
+    },
+    "data/software/express_4.18.2/edges.csv": {
+      "bytes": 8148,
+      "category": "frozen_public_input",
+      "sha256": "11dfe4c2b82b30e836eda0bb31b8690edceb316134ee16fa8a6ffe22cd7cfab0"
+    },
+    "data/software/express_4.18.2/manifest.json": {
+      "bytes": 998,
+      "category": "frozen_public_input",
+      "sha256": "1878c21e70961672c61597bcbe1bc225ba23fe1040f97d2d66db4f12c00a4f93"
+    },
+    "data/software/express_4.18.2/nodes.csv": {
+      "bytes": 5487,
+      "category": "frozen_public_input",
+      "sha256": "854ddc4f2a4b803d983cb713145524589fdf6425d91e70867d90bd8aa182f31b"
+    },
+    "gbbrpm/__init__.py": {
+      "bytes": 206,
+      "category": "core_package",
+      "sha256": "590c96caf435ab06536106fdb7e5b57e3cff2a43844b7ecf62aacc58e4bbf156"
+    },
+    "gbbrpm/benchmark_comparators.py": {
+      "bytes": 20976,
+      "category": "core_package",
+      "sha256": "d1635911426cb46debd4b085b125146f89cc051c93dd694ff8e586bcd6d509a3"
+    },
+    "gbbrpm/benchmark_metrics.py": {
+      "bytes": 23960,
+      "category": "core_package",
+      "sha256": "6ecaffcbf92e3e6d857666c9cc6f9ed0b92a92cd5fa3d53897c986f28d4f35a0"
+    },
+    "gbbrpm/certified_screening.py": {
+      "bytes": 18338,
+      "category": "core_package",
+      "sha256": "89cc34853c0e1aeeac8e080e0cc0eecf633eeed95635ed25c5c0d8027a8da8b2"
+    },
+    "gbbrpm/core.py": {
+      "bytes": 8564,
+      "category": "core_package",
+      "sha256": "a5d5ce4fc81edb845b3aa79344c4ed5021b2b4f2533253c951840f1c829729b3"
+    },
+    "gbbrpm/csr_graph.py": {
+      "bytes": 14361,
+      "category": "core_package",
+      "sha256": "a5940fc9cb07b9e153175d0196e5fcd8d7d20d850f8c447f857c1628093ca76a"
+    },
+    "gbbrpm/exact_ref.py": {
+      "bytes": 5505,
+      "category": "core_package",
+      "sha256": "230fa6aae344fd2bd63c30fa1f9746ba27c6b96a809cc11957116cf1a68c49f5"
+    },
+    "gbbrpm/generators.py": {
+      "bytes": 36027,
+      "category": "core_package",
+      "sha256": "e5bc1046c38feb69ba02503eba0fa4e76361cb5afa6d8ea99f978c19482e0ca9"
+    },
+    "gbbrpm/mc_ref.py": {
+      "bytes": 15990,
+      "category": "core_package",
+      "sha256": "b6a61eb063764a46e4f9c6a505fcfc8b9607f894abe04b28b61d06ac0891ff11"
+    },
+    "model.py": {
+      "bytes": 3953,
+      "category": "core_and_benchmark_scripts",
+      "sha256": "dff506d252d9a4c7958a9a6a6d39569c57a90fb011966f54e651c9bd553f5ebb"
+    },
+    "reconvergence.py": {
+      "bytes": 6903,
+      "category": "core_and_benchmark_scripts",
+      "sha256": "35469167bb7756c1ced2be4843b71de8cfb79429d93e6af236add9215a117cb1"
+    },
+    "requirements-lock-v2.0.0.txt": {
+      "bytes": 810,
+      "category": "core_and_benchmark_scripts",
+      "sha256": "9e5f00424928a58c29d3724b3e1f0970eba9c7e1a81ad1818dc73babc0b853e3"
+    },
+    "results/dev_pilot/dev_compute_pilot.csv": {
+      "bytes": 23940,
+      "category": "dev_pilot_artifact",
+      "sha256": "939f350534497bbe699f228fcb668badc39efacea98d4d97e34b87679e9abe7b"
+    },
+    "results/dev_pilot/dev_compute_pilot_summary.json": {
+      "bytes": 5461,
+      "category": "dev_pilot_artifact",
+      "sha256": "3bc58d2e96ff1da95ddb06f3b36a0a3fa56ff159960ffc35bbbb7a0fdd41adb5"
+    },
+    "results/dev_pilot/dev_controls_branch_560.csv": {
+      "bytes": 265555,
+      "category": "dev_pilot_artifact",
+      "sha256": "541a8bd04bfbfeb8c4e00430c9d71ae127d7cc96c2b9d5d56698998e6e1644d3"
+    },
+    "results/dev_pilot/dev_controls_dag_720.csv": {
+      "bytes": 889669,
+      "category": "dev_pilot_artifact",
+      "sha256": "1b49f5eb1148658c256976fe058cdcc123fd8a81f02b227ff8ce11daf51da13e"
+    },
+    "results/dev_pilot/dev_controls_hetero_24.csv": {
+      "bytes": 30825,
+      "category": "dev_pilot_artifact",
+      "sha256": "0b2bf59ee50711fd16ca09c3fc3e6656d8b3140383f730673b64d8fe00ca3b68"
+    },
+    "results/dev_pilot/dev_controls_summary.json": {
+      "bytes": 24096,
+      "category": "dev_pilot_artifact",
+      "sha256": "ed97b662e20cac9aa252c15affaa923cd6db5d0763d6a410de54565b9062a8b7"
+    },
+    "scripts/build_protocol_freeze_manifest.py": {
+      "bytes": 23154,
+      "category": "core_and_benchmark_scripts",
+      "sha256": "1f79e3cb59f2a256bfc1917bdbe272b38754498790ecef777521136f8ff99626"
+    },
+    "scripts/run_dev_pilot.py": {
+      "bytes": 55974,
+      "category": "core_and_benchmark_scripts",
+      "sha256": "bbcca2fb67aa438283b2c38d39c69717025dd365ab351f6eae5a4e7dade219cd"
+    }
+  }
+}

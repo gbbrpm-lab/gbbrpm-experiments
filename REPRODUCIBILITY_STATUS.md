@@ -90,3 +90,25 @@ labeled historical unless their original calculation artifact is recovered.
 to the mean, minimum, and maximum over 30 timed repetitions after five warm-up
 runs. Runtime values remain machine- and load-dependent; the median is the
 preferred descriptive value when isolated scheduling outliers occur.
+
+## Protocol Freeze (v2.0.0-protocol-freeze)
+
+Frozen prior to held-out evaluation on seeds `1001–1020` (`eval_seeds_evaluated = 0`, `eval_outcomes_inspected = false`).
+
+### Frozen Artifacts
+
+- Pinned environment lockfile: `requirements-lock-v2.0.0.txt` (Python `3.13.14`, `numpy==2.2.0`, `scipy==1.15.2`, `pandas==2.2.3`, `networkx==3.4.2`, `pytest==9.0.3`, `matplotlib==3.10.1`, `swmm-toolkit==0.17.0`).
+- Immutable freeze manifest: `results/protocol_freeze/protocol_freeze_manifest_v2.0.0.json`, built and verified by `scripts/build_protocol_freeze_manifest.py`.
+- Protocol freeze summary: `docs/PROTOCOL_FREEZE_v2.0.0.md`.
+- Development compute pilot & controls (`1,304` scenarios: `560` matched branch + `720` dev uniform on seeds `41–45` + `24` dev hetero on seed `41`): `results/dev_pilot/`, with `0` bracket violations, `0` false certifications, and full-inventory feasibility confirmed (`26.30 min` single-core / `4.38 min` across `8` workers for `4,316` primary + `48` million-trial precision audits).
+
+### Verified Commands
+
+```bash
+python scripts/build_protocol_freeze_manifest.py --verify
+pytest -v
+python tests/package_api_test.py
+python tests/smoke_test.py
+python tests/generic_properties_test.py
+python tests/reproducibility_test.py
+```
