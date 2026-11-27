@@ -1,22 +1,52 @@
 {
   "N1": {
     "outlet": "F",
-    "fixture_status": "reconstructed_fixture_not_original_historical_LC_table"
+    "fixture_status": "reconstructed_fixture_not_original_historical_LC_table",
+    "nodes_file": "N1_nodes.csv",
+    "edges_file": "N1_edges.csv",
+    "node_count": 6,
+    "edge_count": 5,
+    "nodes_sha256": "00db801f17e356484633aeaf6d708efcb2cebb55a7cbdb17a3137d0c6c1acedc",
+    "edges_sha256": "4a8be98eee6b9e9337886f0f80c20a3f3d6c3ac56a18b44cea31f69e80e43035"
   },
   "N2": {
     "outlet": "H",
-    "fixture_status": "reconstructed_fixture_not_original_historical_LC_table"
+    "fixture_status": "reconstructed_fixture_not_original_historical_LC_table",
+    "nodes_file": "N2_nodes.csv",
+    "edges_file": "N2_edges.csv",
+    "node_count": 8,
+    "edge_count": 7,
+    "nodes_sha256": "fa7dcf7fcb38b2d7eac0789d3095dd7ba25ee122875b189c7369ac0e9c0cb9e3",
+    "edges_sha256": "3d956c6da7a046694d5abb210d61976b2b7cd42aa6288854ba1b364265e76da4"
   },
   "N3": {
     "outlet": "H",
-    "fixture_status": "reconstructed_fixture_not_original_historical_LC_table"
+    "fixture_status": "reconstructed_fixture_not_original_historical_LC_table",
+    "nodes_file": "N3_nodes.csv",
+    "edges_file": "N3_edges.csv",
+    "node_count": 8,
+    "edge_count": 7,
+    "nodes_sha256": "9bff2f215e3413f2a41dfb624576b9d60bb343f45a346574a4f9837d8ae760a3",
+    "edges_sha256": "7962ef9a5a1270f0f4211d1da93f3122034a14632d035ccb5cd647f5451a59a8"
   },
   "N4": {
     "outlet": "G",
-    "fixture_status": "reconstructed_fixture_not_original_historical_LC_table"
+    "fixture_status": "reconstructed_fixture_not_original_historical_LC_table",
+    "nodes_file": "N4_nodes.csv",
+    "edges_file": "N4_edges.csv",
+    "node_count": 7,
+    "edge_count": 7,
+    "nodes_sha256": "ad4c09ec67ec8359ef13014ece19631803ecc3dddbca6b36e80599d206316db9",
+    "edges_sha256": "b5ec9917dc3a3c58473057381c5a4d14715a91dbab33ef9876faca69c8442766"
   },
   "N5": {
     "outlet": "N20",
-    "fixture_status": "reconstructed_fixture_not_original_historical_LC_table"
+    "fixture_status": "reconstructed_fixture_not_original_historical_LC_table",
+    "nodes_file": "N5_nodes.csv",
+    "edges_file": "N5_edges.csv",
+    "node_count": 20,
+    "edge_count": 27,
+    "nodes_sha256": "9615152b21dcb2bc33f87c95334f767d2a241887b315e675c5ea996d6a8ccbb2",
+    "edges_sha256": "b935748c6d0421a4a4a960ebb93a592e719beab14c1e16aa52676043bc95768d"
   }
 }
