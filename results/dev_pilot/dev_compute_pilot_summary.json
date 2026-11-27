@@ -1,0 +1,164 @@
+{
+  "full_inventory_extrapolation": {
+    "feasible_without_reduction": true,
+    "inventory_counts": {
+      "dag_hetero_total": 144,
+      "dag_uniform_total": 3600,
+      "express_total": 12,
+      "matched_branch_controls": 560,
+      "precision_audits_1m_trials": 48,
+      "primary_scenarios_total": 4316,
+      "total_edge_trials_billions": 88.8576
+    },
+    "parallel_estimate": {
+      "assumed_workers": 8,
+      "efficiency_factor": 0.75,
+      "estimated_wall_minutes": 4.383413077094963,
+      "estimated_wall_sec": 263.0047846256978
+    },
+    "single_core_sec": {
+      "full_graph_tree_bounds": 602.2461270765311,
+      "graph_generation": 52.78690105219721,
+      "mc_precision_audits_1m": 51.449203180964105,
+      "mc_primary_100k": 402.68956214534893,
+      "output_storage": 30.03422316897195,
+      "scalar_abbe_ancestry": 59.61205048573255,
+      "total_minutes": 26.300478462569785,
+      "total_sec": 1578.028707754187,
+      "two_stage_certified_screening": 379.21064064444124
+    }
+  },
+  "hardware": {
+    "git": {
+      "branch": "feat/step4-benchmark-and-screening",
+      "commit_sha": "c6b1a9f8289b027b9a15924fb5afd1a6e94a7804",
+      "working_tree_dirty": true
+    },
+    "logical_cpus": 12,
+    "machine": "AMD64",
+    "networkx_version": "3.4.2",
+    "numpy_version": "2.2.0",
+    "os": "Windows-11-10.0.26200-SP0",
+    "pandas_version": "2.2.3",
+    "processor": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+    "python_version": "3.13.14",
+    "timestamp_utc": "2026-11-27T16:08:40.722041+00:00"
+  },
+  "measured_by_size": {
+    "100": {
+      "abbe_lower_sec": 0.0054802277688092245,
+      "ancestry_diagnostic_sec": 0.004687294444819499,
+      "full_tree_bound_sec": 0.08166957221692428,
+      "graph_gen_sec": 0.01304890554618194,
+      "mc_100k_edge_trials_per_sec": null,
+      "mc_100k_sec_est": 0.11548144448574425,
+      "mc_100k_trials_per_sec": null,
+      "mc_10k_edge_trials_per_sec": 174466489.60212767,
+      "mc_10k_sec": 0.011548144448574426,
+      "mc_10k_trials_per_sec": 872332.4480106386,
+      "mc_1k_sec": 0.003610577780313583,
+      "n_edges": 200.0,
+      "output_storage_sec": 0.006590538891032338,
+      "scalar_comparators_sec": 0.004398899990418512,
+      "screening_total_3budgets_sec": 0.058106261105017945
+    },
+    "20": {
+      "abbe_lower_sec": 0.0012922333262395114,
+      "ancestry_diagnostic_sec": 0.0009978999991694258,
+      "full_tree_bound_sec": 0.004855544435688191,
+      "graph_gen_sec": 0.0035938666745399437,
+      "mc_100k_edge_trials_per_sec": null,
+      "mc_100k_sec_est": 0.025752944477264665,
+      "mc_100k_trials_per_sec": null,
+      "mc_10k_edge_trials_per_sec": 159200656.06464362,
+      "mc_10k_sec": 0.0025752944477264667,
+      "mc_10k_trials_per_sec": 3980016.401616091,
+      "mc_1k_sec": 0.0013091111128839354,
+      "n_edges": 40.0,
+      "output_storage_sec": 0.0032077666708371705,
+      "scalar_comparators_sec": 0.0010049388705131908,
+      "screening_total_3budgets_sec": 0.006549616654713948
+    },
+    "250": {
+      "abbe_lower_sec": 0.014142361113853339,
+      "ancestry_diagnostic_sec": 0.010918466662082614,
+      "full_tree_bound_sec": 0.5192873555513668,
+      "graph_gen_sec": 0.03261398333577543,
+      "mc_100k_edge_trials_per_sec": 219948642.9770966,
+      "mc_100k_sec_est": 0.2281078388979141,
+      "mc_100k_trials_per_sec": 439897.28595419315,
+      "mc_10k_edge_trials_per_sec": 178168267.22756237,
+      "mc_10k_sec": 0.028258766662070736,
+      "mc_10k_trials_per_sec": 356336.5344551248,
+      "mc_1k_sec": 0.008454883338547207,
+      "n_edges": 500.0,
+      "output_storage_sec": 0.013447705552809767,
+      "scalar_comparators_sec": 0.011085777782783326,
+      "screening_total_3budgets_sec": 0.30993681112239657
+    },
+    "50": {
+      "abbe_lower_sec": 0.0028627312422031537,
+      "ancestry_diagnostic_sec": 0.002381422916288203,
+      "full_tree_bound_sec": 0.03366080485365172,
+      "graph_gen_sec": 0.007139506251405692,
+      "mc_100k_edge_trials_per_sec": null,
+      "mc_100k_sec_est": 0.05940113198044451,
+      "mc_100k_trials_per_sec": null,
+      "mc_10k_edge_trials_per_sec": 164925343.64120013,
+      "mc_10k_sec": 0.005940113198044451,
+      "mc_10k_trials_per_sec": 2814634.919014046,
+      "mc_1k_sec": 0.0021721611131700533,
+      "n_edges": 100.0,
+      "output_storage_sec": 0.004476306253410358,
+      "scalar_comparators_sec": 0.0022776742904776865,
+      "screening_total_3budgets_sec": 0.025883358323577948
+    }
+  },
+  "pilot_runtime": {
+    "elapsed_sec": 25.273702100035734,
+    "peak_traced_memory_mb": 46.489548683166504
+  },
+  "protocol": {
+    "b_settings": [
+      0.5,
+      1.0
+    ],
+    "eval_seeds_evaluated": 0,
+    "families": [
+      "forward",
+      "layered",
+      "preferential_attachment"
+    ],
+    "held_out_isolation_verified": true,
+    "mc_backend": "numpy_uint64_bitpacked",
+    "n_pilot_configs": 54,
+    "seed": 41,
+    "sizes": [
+      20,
+      100,
+      250
+    ],
+    "split": "dev_pilot_only",
+    "staged_mc_batches": {
+      "all_54": [
+        1000,
+        10000
+      ],
+      "size_250_all_18": [
+        100000
+      ]
+    },
+    "weight_regimes": [
+      "w=0.10",
+      "w=0.75",
+      "hetero_v1"
+    ]
+  },
+  "size_250_100k_throughput": {
+    "max_sec": 0.25017040001694113,
+    "mean_edge_trials_per_sec": 219948642.9770966,
+    "mean_sec": 0.2281078388979141,
+    "mean_trials_per_sec": 439897.28595419315,
+    "min_sec": 0.20312200003536418
+  }
+}
