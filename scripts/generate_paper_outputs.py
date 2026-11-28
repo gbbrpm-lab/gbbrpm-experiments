@@ -7,10 +7,13 @@ retrieve remote data, or alter source results.
 
 from __future__ import annotations
 
+import argparse
+from dataclasses import dataclass
 import hashlib
 import json
 import math
 from pathlib import Path
+from typing import Any
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -854,7 +857,7 @@ def cross_domain_table(drainage: dict, software: dict, electrical: dict) -> Path
     )
 
 
-def main() -> None:
+def run_legacy_target() -> None:
     configure_style()
     FIGURE_DIR.mkdir(parents=True, exist_ok=True)
     TABLE_DIR.mkdir(parents=True, exist_ok=True)
@@ -926,6 +929,1990 @@ def main() -> None:
         f"Generated {len(figure_paths)} figure files, {len(table_paths)} LaTeX "
         f"tables, and {manifest_path.relative_to(ROOT)}"
     )
+
+
+# =============================================================================
+# Step 6 v2.0 Dual-Target Publication Outputs (Thesis & Elsevier Paper 1)
+# =============================================================================
+
+V2_ROOT = ROOT / "results" / "paper_v2"
+DEV_PILOT_DIR = ROOT / "results" / "dev_pilot"
+HELDOUT_DIR = ROOT / "results" / "heldout_eval"
+FREEZE_MANIFEST_PATH = (
+    ROOT / "results" / "protocol_freeze" / "protocol_freeze_manifest_v2.0.0.json"
+)
+
+V2_EXPECTED_FIGURE_STEMS: tuple[str, ...] = (
+    "fig_v2_matched_branch_controls",
+    "fig_v2_bracket_tightness",
+    "fig_v2_fixed_budget_ranking",
+    "fig_v2_certified_screening",
+    "fig_v2_w_self_diagnosis",
+    "fig_v2_hetero_and_precision_audit",
+    "fig_v2_scalability_sparse_dense",
+    "fig_v2_domain_synthesis",
+)
+
+V2_EXPECTED_TABLES: tuple[str, ...] = (
+    "table_v2_inventory_and_assertions.tex",
+    "table_v2_bracket_tightness.tex",
+    "table_v2_comparator_ranking.tex",
+    "table_v2_certified_screening.tex",
+    "table_v2_hetero_and_audits.tex",
+    "table_v2_scalability.tex",
+    "table_v2_domain_cases.tex",
+)
+
+# Colorblind-safe Okabe-Ito / publication palette
+PAL_BLUE = "#0072B2"
+PAL_ORANGE = "#D55E00"
+PAL_GREEN = "#009E73"
+PAL_PURPLE = "#7E57C2"
+PAL_AMBER = "#E69F00"
+PAL_SKY = "#56B4E9"
+PAL_CRIMSON = "#B91C1C"
+PAL_NAVY = "#1E293B"
+PAL_SLATE = "#64748B"
+
+FAMILIES_ORDER = ["forward", "layered", "preferential_attachment"]
+FAMILY_LABELS = {
+    "forward": "Forward DAG",
+    "layered": "Layered DAG",
+    "preferential_attachment": "Pref. Attach.",
+}
+FAMILY_SHORT = {
+    "forward": "Forward",
+    "layered": "Layered",
+    "preferential_attachment": "Pref. Att.",
+}
+FAMILY_COLORS = {
+    "forward": PAL_BLUE,
+    "layered": PAL_GREEN,
+    "preferential_attachment": PAL_ORANGE,
+}
+FAMILY_MARKERS = {
+    "forward": "o",
+    "layered": "s",
+    "preferential_attachment": "^",
+}
+
+COMPARATORS_ORDER = ["R", "T", "abbe", "H", "ancestry", "local_upstream", "M"]
+COMPARATOR_LABELS = {
+    "R": r"GBBRPM ($R$)",
+    "T": r"Tree ($T$)",
+    "abbe": "Abbe",
+    "H": r"Clipped ($H$)",
+    "ancestry": "Ancestry",
+    "local_upstream": "Local-up.",
+    "M": r"Max ($M$)",
+}
+COMPARATOR_TEX = {
+    "R": r"GBBRPM ($R_j$)",
+    "T": r"Tree lower ($T_j$)",
+    "abbe": r"Abbe lower",
+    "H": r"Clipped sum ($H_j$)",
+    "ancestry": r"Ancestry diag.",
+    "local_upstream": r"Local-upstream",
+    "M": r"Recursive max ($M_j$)",
+}
+COMPARATOR_COLORS = {
+    "R": PAL_BLUE,
+    "T": PAL_GREEN,
+    "abbe": PAL_SKY,
+    "H": PAL_PURPLE,
+    "ancestry": PAL_AMBER,
+    "local_upstream": PAL_SLATE,
+    "M": PAL_ORANGE,
+}
+
+
+@dataclass(frozen=True)
+class V2TargetConfig:
+    name: str
+    out_dir: Path
+    width_wide: float
+    width_single: float
+    font_base: float
+    font_label: float
+    font_title: float
+    font_tick: float
+    font_legend: float
+    font_annot: float
+    table_env_narrow: str
+    table_env_wide: str
+    table_font_cmd: str
+    tabcolsep_pt: float
+    use_resizebox_wide: bool
+    label_suffix: str
+
+
+V2_TARGETS: dict[str, V2TargetConfig] = {
+    "thesis": V2TargetConfig(
+        name="thesis",
+        out_dir=V2_ROOT / "thesis",
+        width_wide=6.00,
+        width_single=5.80,
+        font_base=9.2,
+        font_label=9.0,
+        font_title=9.6,
+        font_tick=8.2,
+        font_legend=8.0,
+        font_annot=7.6,
+        table_env_narrow="table",
+        table_env_wide="table",
+        table_font_cmd=r"\footnotesize",
+        tabcolsep_pt=4.0,
+        use_resizebox_wide=True,
+        label_suffix="",
+    ),
+    "elsevier_paper1": V2TargetConfig(
+        name="elsevier_paper1",
+        out_dir=V2_ROOT / "elsevier_paper1",
+        width_wide=7.20,
+        width_single=3.54,
+        font_base=8.0,
+        font_label=8.0,
+        font_title=8.5,
+        font_tick=7.5,
+        font_legend=7.3,
+        font_annot=7.0,
+        table_env_narrow="table",
+        table_env_wide="table*",
+        table_font_cmd=r"\scriptsize",
+        tabcolsep_pt=3.5,
+        use_resizebox_wide=True,
+        label_suffix="",
+    ),
+}
+
+
+def configure_v2_style(cfg: V2TargetConfig) -> None:
+    mpl.rcParams.update(
+        {
+            "font.family": "DejaVu Sans",
+            "font.size": cfg.font_base,
+            "axes.labelsize": cfg.font_label,
+            "axes.titlesize": cfg.font_title,
+            "axes.titleweight": "bold",
+            "legend.fontsize": cfg.font_legend,
+            "xtick.labelsize": cfg.font_tick,
+            "ytick.labelsize": cfg.font_tick,
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+            "axes.edgecolor": SLATE,
+            "axes.linewidth": 0.75,
+            "grid.color": PALE,
+            "grid.linewidth": 0.55,
+            "grid.alpha": 0.85,
+            "lines.linewidth": 1.55,
+            "lines.markersize": 4.5,
+            "pdf.fonttype": 42,
+            "ps.fonttype": 42,
+            "mathtext.fontset": "dejavusans",
+            "savefig.pad_inches": 0.05,
+        }
+    )
+
+
+def save_v2_figure(fig: plt.Figure, cfg: V2TargetConfig, stem: str) -> list[Path]:
+    fig_dir = cfg.out_dir / "figures"
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    pdf = fig_dir / f"{stem}.pdf"
+    png = fig_dir / f"{stem}.png"
+    fig.savefig(
+        pdf,
+        bbox_inches="tight",
+        metadata={
+            "Creator": f"GBBRPM paper-output generator v2 ({cfg.name})",
+            "CreationDate": None,
+        },
+    )
+    fig.savefig(
+        png,
+        dpi=300,
+        bbox_inches="tight",
+        metadata={"Software": f"GBBRPM paper-output generator v2 ({cfg.name})"},
+    )
+    plt.close(fig)
+    return [pdf, png]
+
+
+def write_v2_table(
+    cfg: V2TargetConfig,
+    filename: str,
+    *,
+    caption: str,
+    label: str,
+    headers: list[str],
+    rows: list[list[str]],
+    column_spec: str,
+    wide: bool = True,
+    note: str | None = None,
+    raw_rows: bool = True,
+) -> Path:
+    """Write a deterministic booktabs LaTeX table tailored to thesis or elsarticle."""
+    table_dir = cfg.out_dir / "tables"
+    table_dir.mkdir(parents=True, exist_ok=True)
+    env = cfg.table_env_wide if wide else cfg.table_env_narrow
+    pos = "[t!]" if cfg.name == "elsevier_paper1" else "[htbp]"
+
+    lines = [
+        f"% Auto-generated by scripts/generate_paper_outputs.py --target {cfg.name}; do not edit manually.",
+        f"\\begin{{{env}}}{pos}",
+        "\\centering",
+        f"\\caption{{{caption}}}",
+        f"\\label{{{label}}}",
+        cfg.table_font_cmd,
+        f"\\setlength{{\\tabcolsep}}{{{cfg.tabcolsep_pt:.1f}pt}}",
+    ]
+    if wide and cfg.use_resizebox_wide:
+        lines.append(r"\resizebox{\linewidth}{!}{%")
+    lines.extend(
+        [
+            f"\\begin{{tabular}}{{{column_spec}}}",
+            "\\toprule",
+            " & ".join(headers) + r" \\",
+            "\\midrule",
+        ]
+    )
+    for row in rows:
+        if len(row) == 1 and row[0].startswith("\\"):
+            lines.append(row[0])
+        elif raw_rows:
+            lines.append(" & ".join(str(cell) for cell in row) + r" \\")
+        else:
+            lines.append(" & ".join(latex_escape(cell) for cell in row) + r" \\")
+    lines.extend(["\\bottomrule", "\\end{tabular}"])
+    if wide and cfg.use_resizebox_wide:
+        lines.append("}")
+    if note:
+        lines.append(
+            f"\\par\\vspace{{3pt}}\\parbox{{0.98\\linewidth}}{{\\raggedright\\scriptsize {note}}}"
+        )
+    lines.extend([f"\\end{{{env}}}", ""])
+    path = table_dir / filename
+    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    return path
+
+
+def _fmt_mean_sd(stat: dict[str, Any], digits: int = 4) -> str:
+    return f"{stat['mean']:.{digits}f} $\\pm$ {stat['sd']:.{digits}f}"
+
+
+def _fmt_med_iqr(stat: dict[str, Any], digits: int = 4) -> str:
+    return f"{stat['median']:.{digits}f} [{stat['iqr']:.{digits}f}]"
+
+
+def _fmt_pct_mean_sd(stat: dict[str, Any], digits: int = 1) -> str:
+    return f"{100.0 * stat['mean']:.{digits}f}\\% $\\pm$ {100.0 * stat['sd']:.{digits}f}\\%"
+
+
+def _fmt_pct_med_iqr(stat: dict[str, Any], digits: int = 1) -> str:
+    return f"{100.0 * stat['median']:.{digits}f}\\% [{100.0 * stat['iqr']:.{digits}f}\\%]"
+
+
+def _load_v2_inputs() -> dict[str, Any]:
+    """Load all frozen dev_pilot and heldout_eval artifacts (read-only, zero simulation)."""
+    branch_df = pd.read_csv(require(DEV_PILOT_DIR / "dev_controls_branch_560.csv"))
+    dev_summary = json.loads(
+        require(DEV_PILOT_DIR / "dev_controls_summary.json").read_text(encoding="utf-8")
+    )
+    uniform_df = pd.read_csv(require(HELDOUT_DIR / "heldout_uniform_2880.csv"))
+    hetero_df = pd.read_csv(require(HELDOUT_DIR / "heldout_hetero_120.csv"))
+    express_12_df = pd.read_csv(require(HELDOUT_DIR / "heldout_express_12.csv"))
+    audit_df = pd.read_csv(require(HELDOUT_DIR / "heldout_precision_audits_48.csv"))
+    heldout_summary = json.loads(
+        require(HELDOUT_DIR / "heldout_eval_summary.json").read_text(encoding="utf-8")
+    )
+    scal_df = pd.read_csv(require(HELDOUT_DIR / "scalability_v2.csv"))
+    scal_summary = json.loads(
+        require(HELDOUT_DIR / "scalability_v2_summary.json").read_text(encoding="utf-8")
+    )
+    domain_summary = json.loads(
+        require(HELDOUT_DIR / "domain_cases_v2_summary.json").read_text(encoding="utf-8")
+    )
+    domain_express_df = pd.read_csv(require(HELDOUT_DIR / "domain_express_v2.csv"))
+    freeze_manifest = json.loads(require(FREEZE_MANIFEST_PATH).read_text(encoding="utf-8"))
+
+    return {
+        "branch_df": branch_df,
+        "dev_summary": dev_summary,
+        "uniform_df": uniform_df,
+        "hetero_df": hetero_df,
+        "express_12_df": express_12_df,
+        "audit_df": audit_df,
+        "heldout_summary": heldout_summary,
+        "scal_df": scal_df,
+        "scal_summary": scal_summary,
+        "domain_summary": domain_summary,
+        "domain_express_df": domain_express_df,
+        "freeze_manifest": freeze_manifest,
+    }
+
+
+# -----------------------------------------------------------------------------
+# 8 Core v2 Figures
+# -----------------------------------------------------------------------------
+
+
+def _fig_v2_matched_branch_controls(cfg: V2TargetConfig, data: dict[str, Any]) -> list[Path]:
+    br = data["branch_df"]
+    fig, axes = plt.subplots(
+        1, 2, figsize=(cfg.width_wide, 2.80 if cfg.name == "elsevier_paper1" else 3.00)
+    )
+
+    # Panel (a): Shared vs. Independent upper slack across p for m in {1,2,4,8} at b=0.50, ell=2
+    ax = axes[0]
+    sub_shared = br[(br["condition"] == "shared") & (br["ell"] == 2) & (np.isclose(br["b"], 0.5))]
+    sub_indep = br[(br["condition"] == "independent") & (br["ell"] == 2) & (np.isclose(br["b"], 0.5))]
+    m_colors = {1: PAL_SLATE, 2: PAL_SKY, 4: PAL_BLUE, 8: PAL_ORANGE}
+    m_markers = {1: "v", 2: "o", 4: "s", 8: "^"}
+    for m in [1, 2, 4, 8]:
+        rows = sub_shared[sub_shared["m"] == m].sort_values("p")
+        ax.plot(
+            rows["p"],
+            rows["upper_slack_d"],
+            color=m_colors[m],
+            marker=m_markers[m],
+            label=f"Shared ($m={m}$)",
+        )
+    indep_rows = sub_indep[sub_indep["m"] == 8].sort_values("p")
+    ax.plot(
+        indep_rows["p"],
+        np.maximum(0.0, indep_rows["upper_slack_d"]),
+        color=PAL_NAVY,
+        linestyle="--",
+        linewidth=1.3,
+        label=r"Indep. (all $m$, $\leq 10^{-15}$)",
+    )
+    ax.set_title(r"(a) Shared vs. Indep. ($b=0.5, \ell=2$)")
+    ax.set_xlabel(r"Edge weight $p$")
+    ax.set_ylabel(r"Upper slack $R_d - \pi_d$")
+    ax.set_ylim(-0.03, 0.82)
+    ax.set_xlim(0.0, 1.04)
+    ax.grid(True, axis="y")
+    ax.legend(frameon=False, loc="upper left", ncol=1, handlelength=1.6, fontsize=cfg.font_legend - 0.5)
+
+    # Panel (b): Heatmap of shared-origin upper slack R_d - pi_d across (b, p) at m=8, ell=2
+    ax = axes[1]
+    hm_sub = br[(br["condition"] == "shared") & (br["m"] == 8) & (br["ell"] == 2)]
+    pivot = hm_sub.pivot(index="b", columns="p", values="upper_slack_d").sort_index(ascending=False)
+    im = ax.imshow(pivot.to_numpy(), aspect="auto", cmap="YlOrRd", vmin=0.0, vmax=0.66)
+    ax.set_xticks(np.arange(len(pivot.columns)), [f"{v:.2g}" for v in pivot.columns])
+    ax.set_yticks(np.arange(len(pivot.index)), [f"{v:.2f}" for v in pivot.index])
+    ax.set_xlabel(r"Edge weight $p$")
+    ax.set_ylabel(r"Origin severity $b$")
+    ax.set_title(r"(b) Shared Slack ($m=8, \ell=2$)")
+    arr = pivot.to_numpy()
+    for i in range(arr.shape[0]):
+        for j in range(arr.shape[1]):
+            val = 0.0 if abs(float(arr[i, j])) < 1e-12 else float(arr[i, j])
+            txt_color = "white" if val >= 0.34 else PAL_NAVY
+            ax.text(
+                j,
+                i,
+                f"{val:.2f}",
+                ha="center",
+                va="center",
+                fontsize=cfg.font_annot - 0.6,
+                color=txt_color,
+            )
+    cbar = fig.colorbar(im, ax=ax, fraction=0.048, pad=0.03)
+    cbar.set_label(r"$R_d - \pi_d$", fontsize=cfg.font_tick)
+    cbar.ax.tick_params(labelsize=cfg.font_tick - 0.5)
+
+    fig.tight_layout(w_pad=1.8)
+    return save_v2_figure(fig, cfg, "fig_v2_matched_branch_controls")
+
+
+def _fig_v2_bracket_tightness(cfg: V2TargetConfig, data: dict[str, Any]) -> list[Path]:
+    udf = data["uniform_df"]
+    rep_w = (
+        udf.groupby(["family", "weight_value", "size", "graph_seed"], as_index=False)[
+            ["W_mean", "tree_width_mean", "upper_slack_R_minus_pi_mean"]
+        ]
+        .mean()
+    )
+    rep_fam = (
+        udf.groupby(["family", "size", "graph_seed"], as_index=False)[
+            [
+                "upper_slack_R_minus_pi_mean",
+                "lower_slack_pi_minus_T_mean",
+                "lower_slack_pi_minus_M_mean",
+                "W_mean",
+            ]
+        ]
+        .mean()
+    )
+
+    fig, axes = plt.subplots(
+        1, 2, figsize=(cfg.width_wide, 2.95 if cfg.name == "elsevier_paper1" else 3.15)
+    )
+
+    # Panel (a): Bracket widths W_j and R_j - T_j across edge weights by family (evenly spaced x-positions)
+    ax = axes[0]
+    weights = sorted(rep_w["weight_value"].unique())
+    xw = np.arange(len(weights))
+    for fam in FAMILIES_ORDER:
+        sub = rep_w[rep_w["family"] == fam]
+        med_w, q25_w, q75_w = [], [], []
+        med_t = []
+        for w in weights:
+            vals_w = sub[sub["weight_value"] == w]["W_mean"].to_numpy()
+            vals_t = sub[sub["weight_value"] == w]["tree_width_mean"].to_numpy()
+            q25, m, q75 = np.percentile(vals_w, [25, 50, 75])
+            med_w.append(m)
+            q25_w.append(q25)
+            q75_w.append(q75)
+            med_t.append(np.median(vals_t))
+        col = FAMILY_COLORS[fam]
+        ax.plot(
+            xw,
+            med_w,
+            color=col,
+            marker=FAMILY_MARKERS[fam],
+            label=f"{FAMILY_SHORT[fam]} ($W_j$)",
+        )
+        ax.fill_between(xw, q25_w, q75_w, color=col, alpha=0.14, linewidth=0)
+        ax.plot(
+            xw,
+            med_t,
+            color=col,
+            linestyle="--",
+            linewidth=1.15,
+            alpha=0.85,
+        )
+    handles, labels = ax.get_legend_handles_labels()
+    handles.append(Line2D([0], [0], color=PAL_NAVY, linestyle="--", linewidth=1.15))
+    labels.append(r"Dashed: $R_j - T_j$")
+    ax.set_title("(a) Bracket Width vs. Weight")
+    ax.set_xlabel(r"Uniform edge weight $w$")
+    ax.set_ylabel("Mean receiving-state width")
+    ax.set_xticks(xw, [f"{w:.2f}" for w in weights])
+    ax.set_ylim(0.0, 0.60)
+    ax.grid(True, axis="y")
+    ax.legend(handles, labels, frameon=False, loc="upper left", ncol=1, handlelength=1.5, fontsize=cfg.font_legend - 0.4)
+
+    # Panel (b): Asymmetric bracket slack decomposition by family (replicate medians + IQR)
+    ax = axes[1]
+    x = np.arange(len(FAMILIES_ORDER))
+    bw = 0.25
+    slack_specs = [
+        ("upper_slack_R_minus_pi_mean", r"Upper $R_j - \pi_j$", PAL_BLUE, -bw),
+        ("lower_slack_pi_minus_T_mean", r"Tree lower $\pi_j - T_j$", PAL_GREEN, 0.0),
+        ("lower_slack_pi_minus_M_mean", r"Max lower $\pi_j - M_j$", PAL_ORANGE, bw),
+    ]
+    for col_name, lbl, color, offset in slack_specs:
+        meds, lo_err, hi_err = [], [], []
+        for fam in FAMILIES_ORDER:
+            vals = rep_fam[rep_fam["family"] == fam][col_name].to_numpy()
+            q25, m, q75 = np.percentile(vals, [25, 50, 75])
+            meds.append(m)
+            lo_err.append(m - q25)
+            hi_err.append(q75 - m)
+        bars = ax.bar(
+            x + offset,
+            meds,
+            width=bw * 0.92,
+            color=color,
+            alpha=0.90,
+            label=lbl,
+            yerr=[lo_err, hi_err],
+            capsize=2.5,
+            error_kw={"elinewidth": 0.9, "ecolor": PAL_NAVY},
+        )
+        for bar, m_val, hi_val in zip(bars, meds, hi_err):
+            ax.text(
+                bar.get_x() + bar.get_width() / 2.0,
+                m_val + hi_val + 0.006,
+                f"{m_val:.3f}",
+                ha="center",
+                va="bottom",
+                fontsize=cfg.font_annot - 0.8,
+                color=PAL_NAVY,
+            )
+    ax.set_xticks(x, [FAMILY_SHORT[f] for f in FAMILIES_ORDER])
+    ax.set_ylabel("Graph-replicate median slack")
+    ax.set_title("(b) Upper vs. Lower Slacks")
+    ax.set_ylim(0.0, 0.235)
+    ax.grid(True, axis="y")
+    ax.set_axisbelow(True)
+    ax.legend(frameon=False, loc="upper left", ncol=1)
+
+    fig.tight_layout(w_pad=1.8)
+    return save_v2_figure(fig, cfg, "fig_v2_bracket_tightness")
+
+
+def _fig_v2_fixed_budget_ranking(cfg: V2TargetConfig, data: dict[str, Any]) -> list[Path]:
+    u_sum = data["heldout_summary"]["heldout_uniform_2880"]
+    fig, axes = plt.subplots(
+        1, 2, figsize=(cfg.width_wide, 3.05 if cfg.name == "elsevier_paper1" else 3.25)
+    )
+
+    # Panel (a): Fixed-budget top-k regret across all 7 comparators at f in {0.10, 0.20, 0.30}
+    ax = axes[0]
+    x = np.arange(len(COMPARATORS_ORDER))
+    bw = 0.25
+    budget_styles = [
+        ("f10", r"$f=0.10$", PAL_SKY, -bw),
+        ("f20", r"$f=0.20$", PAL_BLUE, 0.0),
+        ("f30", r"$f=0.30$", PAL_NAVY, bw),
+    ]
+    for tag, lbl, col, offset in budget_styles:
+        means = [
+            u_sum["overall"]["ranking_by_budget"][tag]["regret"][c]["mean"]
+            for c in COMPARATORS_ORDER
+        ]
+        bars = ax.bar(x + offset, means, width=bw * 0.92, color=col, label=lbl, alpha=0.92)
+        ax.text(
+            bars[0].get_x() + bars[0].get_width() / 2.0,
+            means[0] * 1.18,
+            f"{means[0]:.4f}",
+            ha="center",
+            va="bottom",
+            fontsize=cfg.font_annot - 1.0,
+            rotation=90,
+            color=PAL_NAVY,
+        )
+    ax.set_yscale("log")
+    ax.set_ylim(2.5e-3, 3.2)
+    ax.set_xticks(x, [COMPARATOR_LABELS[c] for c in COMPARATORS_ORDER], rotation=24, ha="right")
+    ax.set_ylabel("Mean fixed-budget regret (log scale)")
+    ax.set_title("(a) Top-$k$ Regret Across Budgets (Eq. 3-17)")
+    ax.grid(True, axis="y", which="major")
+    ax.set_axisbelow(True)
+    ax.legend(frameon=False, loc="upper left", ncol=3, columnspacing=0.8)
+
+    # Panel (b): Tie-aware Spearman rank correlation by comparator and family
+    ax = axes[1]
+    for fam, offset in zip(FAMILIES_ORDER, (-bw, 0.0, bw)):
+        meds, lo_err, hi_err = [], [], []
+        for c in COMPARATORS_ORDER:
+            st = u_sum["by_family"][fam]["spearman"][c]
+            meds.append(st["median"])
+            lo_err.append(st["median"] - st["q25"])
+            hi_err.append(st["q75"] - st["median"])
+        ax.errorbar(
+            x + offset,
+            meds,
+            yerr=[lo_err, hi_err],
+            fmt=FAMILY_MARKERS[fam],
+            color=FAMILY_COLORS[fam],
+            markersize=4.3,
+            capsize=2.2,
+            elinewidth=0.95,
+            linestyle="none",
+            label=FAMILY_SHORT[fam],
+        )
+    ax.axhline(1.0, color=LIGHT, linestyle=":", linewidth=0.9)
+    ax.set_xticks(x, [COMPARATOR_LABELS[c] for c in COMPARATORS_ORDER], rotation=24, ha="right")
+    ax.set_ylabel(r"Tie-aware Spearman $\rho$ (med. & IQR)")
+    ax.set_title("(b) Rank Correlation by DAG Family")
+    ax.set_ylim(0.30, 1.04)
+    ax.grid(True, axis="y")
+    ax.legend(frameon=False, loc="lower left", ncol=3, columnspacing=0.8)
+
+    fig.tight_layout(w_pad=1.6)
+    return save_v2_figure(fig, cfg, "fig_v2_fixed_budget_ranking")
+
+
+def _fig_v2_certified_screening(cfg: V2TargetConfig, data: dict[str, Any]) -> list[Path]:
+    """Paper 1 Centerpiece: 4-panel Two-Stage Certified Top-k Screening evaluation."""
+    u_sum = data["heldout_summary"]["heldout_uniform_2880"]
+    sizes = [20, 50, 100, 250]
+
+    fig, axes = plt.subplots(
+        2, 2, figsize=(cfg.width_wide, 5.05 if cfg.name == "elsevier_paper1" else 5.35)
+    )
+
+    # Panel (a): Stage 1 -> Stage 2 resolution & boundary band reduction by family & budget
+    ax = axes[0, 0]
+    x = np.arange(len(FAMILIES_ORDER))
+    bw = 0.25
+    budget_info = [("f10", "10%", -bw), ("f20", "20%", 0.0), ("f30", "30%", bw)]
+    for tag, blbl, offset in budget_info:
+        s1_vals = [100.0 * u_sum["by_family"][f]["certified_screening"][tag]["res_s1"]["mean"] for f in FAMILIES_ORDER]
+        dr_vals = [100.0 * u_sum["by_family"][f]["certified_screening"][tag]["band_reduction"]["mean"] for f in FAMILIES_ORDER]
+        ax.bar(
+            x + offset,
+            s1_vals,
+            width=bw * 0.88,
+            color=PAL_BLUE,
+            alpha=0.88 if tag == "f20" else (0.55 if tag == "f10" else 0.72),
+            edgecolor="white",
+            linewidth=0.5,
+            label=r"Stage 1 ($\mathrm{Res}_{S1}$)" if tag == "f20" else None,
+        )
+        ax.bar(
+            x + offset,
+            dr_vals,
+            bottom=s1_vals,
+            width=bw * 0.88,
+            color=PAL_ORANGE,
+            alpha=0.92 if tag == "f20" else (0.62 if tag == "f10" else 0.76),
+            edgecolor="white",
+            linewidth=0.5,
+            label=r"Stage 2 gain ($\Delta_{\mathrm{band}}$)" if tag == "f20" else None,
+        )
+        for xi, s1, dr in zip(x, s1_vals, dr_vals):
+            tot = s1 + dr
+            ax.text(
+                xi + offset,
+                tot + 1.5,
+                f"{blbl}\n{tot:.0f}%",
+                ha="center",
+                va="bottom",
+                fontsize=cfg.font_annot - 1.1,
+                color=PAL_NAVY,
+            )
+    ax.set_xticks(x, [FAMILY_SHORT[f] for f in FAMILIES_ORDER])
+    ax.set_ylabel("Certified candidate resolution (%)")
+    ax.set_title("(a) Stage 1 to Stage 2 Resolution ($f=10,20,30\\%$)")
+    ax.set_ylim(0, 118)
+    ax.grid(True, axis="y")
+    ax.set_axisbelow(True)
+    ax.legend(frameon=False, loc="upper right", ncol=1)
+
+    # Panel (b): Full-certification rate (Stage 1 vs. Stage 2) across families & budgets
+    ax = axes[0, 1]
+    for tag, blbl, col, offset in [
+        ("f10", r"$f=0.10$", PAL_SKY, -bw),
+        ("f20", r"$f=0.20$", PAL_BLUE, 0.0),
+        ("f30", r"$f=0.30$", PAL_NAVY, bw),
+    ]:
+        s2_fc = [
+            100.0 * u_sum["by_family"][f]["certified_screening"][tag]["full_cert_s2_rate"]["mean"]
+            for f in FAMILIES_ORDER
+        ]
+        s1_fc = [
+            100.0 * u_sum["by_family"][f]["certified_screening"][tag]["full_cert_s1_rate"]["mean"]
+            for f in FAMILIES_ORDER
+        ]
+        bars = ax.bar(x + offset, s2_fc, width=bw * 0.88, color=col, alpha=0.92, label=blbl)
+        ax.bar(
+            x + offset,
+            s1_fc,
+            width=bw * 0.88,
+            color="none",
+            edgecolor="white",
+            hatch="///",
+            linewidth=0.4,
+        )
+        for bar, val in zip(bars, s2_fc):
+            ax.text(
+                bar.get_x() + bar.get_width() / 2.0,
+                val + 0.8,
+                f"{val:.1f}%",
+                ha="center",
+                va="bottom",
+                fontsize=cfg.font_annot - 0.9,
+                color=PAL_NAVY,
+            )
+    ax.text(
+        0.98,
+        0.80,
+        "0 / 3,060 false certifications\n(analytic & interval verified)",
+        transform=ax.transAxes,
+        ha="right",
+        va="top",
+        fontsize=cfg.font_annot - 0.6,
+        color=PAL_GREEN,
+        fontweight="bold",
+        bbox={"boxstyle": "round,pad=0.25", "facecolor": "#ECFDF5", "edgecolor": PAL_GREEN, "linewidth": 0.7},
+    )
+    ax.set_xticks(x, [FAMILY_SHORT[f] for f in FAMILIES_ORDER])
+    ax.set_ylabel("Full top-$k$ certification rate (%)")
+    ax.set_title("(b) Full-Certification Rate (Hatched: Stage 1)")
+    ax.set_ylim(0, 39)
+    ax.grid(True, axis="y")
+    ax.set_axisbelow(True)
+    ax.legend(frameon=False, loc="upper left", ncol=3, columnspacing=0.7)
+
+    # Panel (c): Paired speedup vs. full-graph T_j across graph size & family (f=0.20)
+    ax = axes[1, 0]
+    for fam in FAMILIES_ORDER:
+        meds, lo_err, hi_err = [], [], []
+        for sz in sizes:
+            st = u_sum["by_family_size"][f"{fam}|n={sz}"]["certified_screening"]["f20"]["speedup_vs_full_T"]
+            meds.append(st["median"])
+            lo_err.append(st["median"] - st["q25"])
+            hi_err.append(st["q75"] - st["median"])
+        ax.errorbar(
+            sizes,
+            meds,
+            yerr=[lo_err, hi_err],
+            color=FAMILY_COLORS[fam],
+            marker=FAMILY_MARKERS[fam],
+            capsize=2.5,
+            label=FAMILY_SHORT[fam],
+        )
+    ax.axhline(1.0, color=PAL_SLATE, linestyle="--", linewidth=0.9, label="1x parity")
+    ax.set_xscale("log")
+    ax.set_xticks(sizes, [str(s) for s in sizes])
+    ax.set_xlabel(r"Graph size $|V|$")
+    ax.set_ylabel(r"Speedup vs. full $T_j$ ($\times$)")
+    ax.set_title(r"(c) Wall-Clock Speedup vs. Full $T_j$ ($f=0.20$)")
+    ax.set_ylim(0.5, 11.2)
+    ax.grid(True, axis="y")
+    ax.legend(frameon=False, loc="upper left", ncol=2, columnspacing=0.8)
+
+    # Panel (d): Paired speedup vs. bit-packed 100k MC across graph size & family (f=0.20)
+    ax = axes[1, 1]
+    for fam in FAMILIES_ORDER:
+        meds, lo_err, hi_err = [], [], []
+        for sz in sizes:
+            st = u_sum["by_family_size"][f"{fam}|n={sz}"]["certified_screening"]["f20"]["speedup_vs_mc"]
+            meds.append(st["median"])
+            lo_err.append(st["median"] - st["q25"])
+            hi_err.append(st["q75"] - st["median"])
+        ax.errorbar(
+            sizes,
+            meds,
+            yerr=[lo_err, hi_err],
+            color=FAMILY_COLORS[fam],
+            marker=FAMILY_MARKERS[fam],
+            capsize=2.5,
+            label=FAMILY_SHORT[fam],
+        )
+    ax.set_xscale("log")
+    ax.set_xticks(sizes, [str(s) for s in sizes])
+    ax.set_xlabel(r"Graph size $|V|$")
+    ax.set_ylabel(r"Speedup vs. 100k MC ($\times$)")
+    ax.set_title(r"(d) Wall-Clock Speedup vs. 100k MC ($f=0.20$)")
+    ax.set_ylim(0, 225)
+    ax.grid(True, axis="y")
+    ax.legend(frameon=False, loc="upper right", ncol=1)
+
+    fig.tight_layout(h_pad=1.35, w_pad=1.5)
+    return save_v2_figure(fig, cfg, "fig_v2_certified_screening")
+
+
+def _fig_v2_w_self_diagnosis(cfg: V2TargetConfig, data: dict[str, Any]) -> list[Path]:
+    udf = data["uniform_df"]
+    w_rel = data["heldout_summary"]["heldout_uniform_2880"]["w_reliability"]
+
+    fig, axes = plt.subplots(
+        1, 2, figsize=(cfg.width_wide, 3.05 if cfg.name == "elsevier_paper1" else 3.25)
+    )
+
+    # Panel (a): Zero-cost W_max vs. actual upper slack R - pi (highlighting reversal scenarios)
+    ax = axes[0]
+    no_rev = udf[udf["n_reversals_R"] == 0]
+    has_rev = udf[udf["n_reversals_R"] > 0]
+    for fam in FAMILIES_ORDER:
+        s0 = no_rev[no_rev["family"] == fam]
+        ax.scatter(
+            s0["W_max"],
+            s0["upper_slack_R_minus_pi_mean"],
+            s=8,
+            alpha=0.22,
+            color=FAMILY_COLORS[fam],
+            edgecolors="none",
+            rasterized=True,
+        )
+    ax.scatter(
+        has_rev["W_max"],
+        has_rev["upper_slack_R_minus_pi_mean"],
+        s=13,
+        alpha=0.55,
+        color=PAL_CRIMSON,
+        marker="x",
+        linewidths=0.7,
+        rasterized=True,
+    )
+    ax.axvline(0.10, color=PAL_NAVY, linestyle="--", linewidth=0.9)
+    rho_rev = w_rel["scenario_screening_reversals_by_W_max"]["spearman_vs_continuous_target"]
+    ax.text(
+        0.13,
+        0.56,
+        f"0 reversals at $W_{{\\max}} \\leq 0.10$\n($\\rho_{{W_{{\\max}},\\mathrm{{rev}}}} = {rho_rev:.3f}$)",
+        transform=ax.transAxes,
+        ha="left",
+        va="center",
+        fontsize=cfg.font_annot - 0.7,
+        color=PAL_NAVY,
+        bbox={"boxstyle": "round,pad=0.22", "facecolor": "white", "edgecolor": LIGHT, "alpha": 0.94},
+    )
+    handles = [
+        Line2D([0], [0], marker="o", color="none", markerfacecolor=FAMILY_COLORS[f], markersize=4.5, label=FAMILY_SHORT[f])
+        for f in FAMILIES_ORDER
+    ] + [
+        Line2D([0], [0], marker="x", color=PAL_CRIMSON, linestyle="none", markersize=5, label="Rev. > 0"),
+        Line2D([0], [0], color=PAL_NAVY, linestyle="--", linewidth=0.9, label=r"$\theta=0.10$"),
+    ]
+    ax.set_xlabel(r"Scenario max scalar width $W_{\max}$")
+    ax.set_ylabel(r"Mean upper slack $R_j - \pi_j$")
+    ax.set_title(r"(a) Max Width $W_{\max}$ vs. Slack")
+    ax.set_xlim(-0.02, 1.02)
+    ax.set_ylim(-0.002, 0.095)
+    ax.grid(True, axis="y")
+    ax.legend(
+        handles=handles,
+        frameon=True,
+        facecolor="white",
+        framealpha=0.94,
+        edgecolor=LIGHT,
+        loc="upper right",
+        ncol=1,
+        handletextpad=0.4,
+        borderpad=0.3,
+        fontsize=cfg.font_legend - 0.5,
+    )
+
+    # Panel (b): Precision / Recall / F1 trade-off across threshold grid (reversals & regret)
+    ax = axes[1]
+    rev_thr = [t for t in w_rel["scenario_screening_reversals_by_W_max"]["thresholds"] if t["threshold"] >= 1e-4]
+    reg_thr = [t for t in w_rel["scenario_screening_regret_f20_by_boundary_W"]["thresholds"] if t["threshold"] >= 1e-4]
+    x_pos = np.arange(len(rev_thr))
+    x_labels = [f"{t['threshold']:g}" for t in rev_thr]
+
+    ax.plot(x_pos, [t["recall"] for t in rev_thr], color=PAL_BLUE, marker="o", label="Rev. Recall")
+    ax.plot(x_pos, [t["precision"] for t in rev_thr], color=PAL_BLUE, linestyle="--", marker="s", label="Rev. Precision")
+    ax.plot(x_pos, [t["f1"] for t in rev_thr], color=PAL_BLUE, linestyle=":", marker="^", label="Rev. F1")
+
+    ax.plot(x_pos, [t["recall"] for t in reg_thr], color=PAL_ORANGE, marker="o", alpha=0.88, label="Regret Recall")
+    ax.plot(x_pos, [t["precision"] for t in reg_thr], color=PAL_ORANGE, linestyle="--", marker="s", alpha=0.88, label="Regret Prec.")
+    ax.plot(x_pos, [t["f1"] for t in reg_thr], color=PAL_ORANGE, linestyle=":", marker="^", alpha=0.88, label="Regret F1")
+
+    ax.set_xticks(x_pos, x_labels)
+    ax.set_xlabel(r"Screening threshold $\theta$")
+    ax.set_ylabel("Classification score")
+    ax.set_title("(b) Reversal & Regret Screening")
+    ax.set_ylim(0.18, 1.32)
+    ax.set_yticks([0.2, 0.4, 0.6, 0.8, 1.0])
+    ax.grid(True, axis="y")
+    ax.legend(
+        frameon=False,
+        loc="upper center",
+        ncol=2,
+        columnspacing=0.9,
+        handlelength=1.7,
+        fontsize=cfg.font_legend - 0.5,
+    )
+
+    fig.tight_layout(w_pad=1.8)
+    return save_v2_figure(fig, cfg, "fig_v2_w_self_diagnosis")
+
+
+def _fig_v2_hetero_and_precision_audit(cfg: V2TargetConfig, data: dict[str, Any]) -> list[Path]:
+    hs = data["heldout_summary"]
+    ph = hs["paired_hetero_vs_uniform_w020"]
+    adf = data["audit_df"]
+
+    fig, axes = plt.subplots(
+        1, 2, figsize=(cfg.width_wide, 3.05 if cfg.name == "elsevier_paper1" else 3.25)
+    )
+
+    # Panel (a): Paired 120 heterogeneous vs. uniform w=0.20 deltas by family
+    ax = axes[0]
+    metric_specs = [
+        ("res_s1_f20", r"$\Delta \mathrm{Res}_{S1}$"),
+        ("res_s2_f20", r"$\Delta \mathrm{Res}_{S2}$"),
+        ("W_mean", r"$\Delta W$"),
+        ("tree_width_mean", r"$\Delta (R-T)$"),
+        ("regret_R_f20", r"$\Delta \mathrm{Regret}_{0.20}$"),
+        ("spearman_R", r"$\Delta \rho(R)$"),
+    ]
+    y = np.arange(len(metric_specs))
+    offsets = [-0.24, 0.0, 0.24]
+    for fam, off in zip(FAMILIES_ORDER, offsets):
+        rd = ph["by_family"][fam]["replicate_deltas"]
+        meds = [rd[m]["median"] for m, _ in metric_specs]
+        lo = [rd[m]["median"] - rd[m]["q25"] for m, _ in metric_specs]
+        hi = [rd[m]["q75"] - rd[m]["median"] for m, _ in metric_specs]
+        ax.errorbar(
+            meds,
+            y + off,
+            xerr=[lo, hi],
+            fmt=FAMILY_MARKERS[fam],
+            color=FAMILY_COLORS[fam],
+            markersize=4.2,
+            capsize=2.0,
+            elinewidth=0.9,
+            linestyle="none",
+            label=FAMILY_SHORT[fam],
+        )
+    ax.axvline(0.0, color=PAL_NAVY, linestyle="--", linewidth=0.85)
+    ax.set_yticks(y, [lbl for _, lbl in metric_specs])
+    ax.invert_yaxis()
+    ax.set_xlabel(r"Paired delta (Hetero $-$ Uniform $w=0.20$)")
+    ax.set_title("(a) Paired Hetero Deltas ($n=120$)")
+    ax.set_xlim(-0.06, 0.34)
+    ax.grid(True, axis="x")
+    ax.legend(frameon=False, loc="lower right", ncol=1)
+
+    # Panel (b): 48 precision audits (100k vs. 1M trials) across graph sizes
+    ax = axes[1]
+    sizes = [20, 50, 100, 250]
+    x = np.arange(len(sizes))
+    h100_vals, h1m_vals = [], []
+    max_meds, max_q25, max_q75 = [], [], []
+    mean_meds, mean_q25, mean_q75 = [], [], []
+    for sz in sizes:
+        sub = adf[adf["size"] == sz]
+        h100_vals.append(float(sub["h_100k"].iloc[0]))
+        h1m_vals.append(float(sub["h_1m"].iloc[0]))
+        q25, m, q75 = np.percentile(sub["max_abs_diff_100k_vs_1m"], [25, 50, 75])
+        max_meds.append(m)
+        max_q25.append(m - q25)
+        max_q75.append(q75 - m)
+        q25m, mm, q75m = np.percentile(sub["mean_abs_diff_100k_vs_1m"], [25, 50, 75])
+        mean_meds.append(mm)
+        mean_q25.append(mm - q25m)
+        mean_q75.append(q75m - mm)
+
+    ax.plot(x, h100_vals, color=PAL_CRIMSON, linestyle="--", marker="d", markersize=3.8, label=r"Hoeffding $h_{100k}$")
+    ax.plot(x, h1m_vals, color=PAL_PURPLE, linestyle=":", marker="v", markersize=3.8, label=r"Hoeffding $h_{1M}$")
+    ax.errorbar(
+        x - 0.12,
+        max_meds,
+        yerr=[max_q25, max_q75],
+        color=PAL_BLUE,
+        marker="o",
+        capsize=2.5,
+        label=r"$\max |\hat{\pi}_{100k}-\hat{\pi}_{1M}|$",
+    )
+    ax.errorbar(
+        x + 0.12,
+        mean_meds,
+        yerr=[mean_q25, mean_q75],
+        color=PAL_GREEN,
+        marker="s",
+        capsize=2.5,
+        label=r"$\mathrm{mean}\,|\hat{\pi}_{100k}-\hat{\pi}_{1M}|$",
+    )
+    ax.text(
+        0.97,
+        0.52,
+        "48/48 audits:\n100% nodes inside $h_{100k}$\n0 reversals, 0 false certs",
+        transform=ax.transAxes,
+        ha="right",
+        va="center",
+        fontsize=cfg.font_annot - 0.6,
+        color=PAL_NAVY,
+        bbox={"boxstyle": "round,pad=0.22", "facecolor": "#F8FAFC", "edgecolor": LIGHT},
+    )
+    ax.set_xticks(x, [str(s) for s in sizes])
+    ax.set_xlabel(r"Graph size $|V|$")
+    ax.set_ylabel("Absolute probability difference")
+    ax.set_title("(b) 100k vs. 1M Audits ($n=48$)")
+    ax.set_ylim(0.0, 0.0094)
+    ax.grid(True, axis="y")
+    ax.legend(
+        frameon=False,
+        loc="upper center",
+        ncol=2,
+        columnspacing=0.45,
+        handlelength=1.25,
+        handletextpad=0.35,
+        fontsize=cfg.font_legend - 1.0,
+    )
+
+    fig.tight_layout(w_pad=1.8)
+    return save_v2_figure(fig, cfg, "fig_v2_hetero_and_precision_audit")
+
+
+def _fig_v2_scalability_sparse_dense(cfg: V2TargetConfig, data: dict[str, Any]) -> list[Path]:
+    sdf = data["scal_df"]
+    ssum = data["scal_summary"]
+
+    fig, axes = plt.subplots(
+        2, 2, figsize=(cfg.width_wide, 5.10 if cfg.name == "elsevier_paper1" else 5.40)
+    )
+
+    method_specs = [
+        ("gbbrpm_csr", "GBBRPM (CSR)", PAL_BLUE, "o", "-"),
+        ("abbe_lower", "Abbe lower", PAL_SKY, "s", "--"),
+        ("ancestry_diagnostic", "Ancestry", PAL_AMBER, "^", "-."),
+        ("two_stage_screening_f20", "Two-Stage f=0.20", PAL_GREEN, "D", "-"),
+        ("full_tree_T", r"Full $T_j$", PAL_ORANGE, "v", "-"),
+        ("gbbrpm_core_df", "GBBRPM (DF)", PAL_PURPLE, "P", ":"),
+    ]
+
+    # Panel (a): Sparse series |V|=20..1000
+    ax = axes[0, 0]
+    sp = sdf[sdf["series"] == "sparse"]
+    for mkey, mlbl, col, mk, ls in method_specs:
+        sub = sp[sp["method"] == mkey].sort_values("n_nodes")
+        ax.errorbar(
+            sub["n_nodes"],
+            sub["median_ms"],
+            yerr=[sub["median_ms"] - sub["q25_ms"], sub["q75_ms"] - sub["median_ms"]],
+            color=col,
+            marker=mk,
+            linestyle=ls,
+            capsize=2.0,
+            label=mlbl,
+        )
+    fit_sp_csr = ssum["scaling_fits_vs_V_plus_E"]["sparse"]["gbbrpm_csr"]
+    fit_sp_T = ssum["scaling_fits_vs_V_plus_E"]["sparse"]["full_tree_T"]
+    ax.text(
+        0.97,
+        0.04,
+        f"CSR slope: $b={fit_sp_csr['exponent']:.2f}$ ($R^2={fit_sp_csr['r2_log_log']:.3f}$)\n"
+        f"Full $T_j$ slope: $b={fit_sp_T['exponent']:.2f}$",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=cfg.font_annot - 0.6,
+        color=PAL_NAVY,
+        bbox={"boxstyle": "round,pad=0.22", "facecolor": "white", "edgecolor": LIGHT, "alpha": 0.92},
+    )
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_ylim(2.5e-2, 1.8e4)
+    ax.set_xticks([20, 50, 100, 250, 500, 1000], ["20", "50", "100", "250", "500", "1k"])
+    ax.set_xlabel(r"Nodes $|V|$ ($|E|=3|V|$)")
+    ax.set_ylabel("Median runtime (ms)")
+    ax.set_title("(a) Sparse Scaling (Med. & IQR)")
+    ax.grid(True, which="major", axis="y")
+    ax.legend(
+        frameon=False,
+        loc="upper left",
+        ncol=2,
+        columnspacing=0.6,
+        handlelength=1.5,
+        fontsize=cfg.font_legend - 0.4,
+    )
+
+    # Panel (b): Dense series |V|=20..250
+    ax = axes[0, 1]
+    dn = sdf[sdf["series"] == "dense"]
+    for mkey, mlbl, col, mk, ls in method_specs:
+        sub = dn[dn["method"] == mkey].sort_values("n_nodes")
+        ax.errorbar(
+            sub["n_nodes"],
+            sub["median_ms"],
+            yerr=[sub["median_ms"] - sub["q25_ms"], sub["q75_ms"] - sub["median_ms"]],
+            color=col,
+            marker=mk,
+            linestyle=ls,
+            capsize=2.0,
+            label=mlbl,
+        )
+    fit_dn_csr = ssum["scaling_fits_vs_V_plus_E"]["dense"]["gbbrpm_csr"]
+    ax.text(
+        0.97,
+        0.05,
+        f"CSR vs $|V|+|E|$: $b={fit_dn_csr['exponent']:.2f}$\n($R^2={fit_dn_csr['r2_log_log']:.3f}$)",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=cfg.font_annot - 0.6,
+        color=PAL_NAVY,
+        bbox={"boxstyle": "round,pad=0.22", "facecolor": "white", "edgecolor": LIGHT, "alpha": 0.92},
+    )
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xticks([20, 50, 100, 250], ["20", "50", "100", "250"])
+    ax.set_xlabel(r"Nodes $|V|$ (25% DAG density)")
+    ax.set_ylabel("Median runtime (ms)")
+    ax.set_title("(b) Dense Scaling (Med. & IQR)")
+    ax.grid(True, which="major", axis="y")
+
+    # Panel (c): Paired 100k MC vs. deterministic methods (forward, seed=1001)
+    ax = axes[1, 0]
+    pm = sdf[sdf["series"] == "paired_mc_reference"]
+    paired_specs = [
+        ("mc_ref_100k", "100k MC (bit-packed)", PAL_CRIMSON, "X", "-"),
+        ("full_tree_T", r"Full $T_j$", PAL_ORANGE, "v", "-"),
+        ("two_stage_screening_f20", "Two-Stage f=0.20", PAL_GREEN, "D", "-"),
+        ("gbbrpm_core_df", "GBBRPM (DF)", PAL_PURPLE, "P", ":"),
+        ("gbbrpm_csr", "GBBRPM (CSR)", PAL_BLUE, "o", "-"),
+    ]
+    for mkey, mlbl, col, mk, ls in paired_specs:
+        sub = pm[pm["method"] == mkey].sort_values("n_nodes")
+        if len(sub) == 0:
+            continue
+        ax.errorbar(
+            sub["n_nodes"],
+            sub["median_ms"],
+            yerr=[sub["median_ms"] - sub["q25_ms"], sub["q75_ms"] - sub["median_ms"]],
+            color=col,
+            marker=mk,
+            linestyle=ls,
+            capsize=2.0,
+            label=mlbl,
+        )
+    p250 = ssum["paired_mc_reference"]["250"]
+    ax.text(
+        0.97,
+        0.04,
+        f"At $|V|=250$:\nCSR: {p250['speedup_mc_vs_gbbrpm_csr']:.0f}x vs MC\n"
+        f"2-Stage: {p250['speedup_mc_vs_two_stage_f20']:.1f}x vs MC",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=cfg.font_annot - 0.6,
+        color=PAL_NAVY,
+        bbox={"boxstyle": "round,pad=0.22", "facecolor": "white", "edgecolor": LIGHT, "alpha": 0.92},
+    )
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_ylim(1.0e-2, 4.5e3)
+    ax.set_xticks([20, 50, 100, 250], ["20", "50", "100", "250"])
+    ax.set_xlabel(r"Nodes $|V|$ (Forward, seed=1001)")
+    ax.set_ylabel("Median runtime (ms)")
+    ax.set_title("(c) Paired 100k MC vs. Deterministic")
+    ax.grid(True, which="major", axis="y")
+    ax.legend(
+        frameon=False,
+        loc="upper left",
+        ncol=2,
+        columnspacing=0.6,
+        handlelength=1.5,
+        fontsize=cfg.font_legend - 0.5,
+    )
+
+    # Panel (d): Peak Python heap memory (tracemalloc KB) across paired |V|=20..250
+    ax = axes[1, 1]
+    mem_specs = [
+        ("mc_ref_100k", "100k MC", PAL_CRIMSON, "X", "-"),
+        ("gbbrpm_core_df", "GBBRPM (DF)", PAL_PURPLE, "P", ":"),
+        ("ancestry_diagnostic", "Ancestry", PAL_AMBER, "^", "-."),
+        ("two_stage_screening_f20", "Two-Stage", PAL_GREEN, "D", "-"),
+        ("full_tree_T", r"Full $T_j$", PAL_ORANGE, "v", "--"),
+        ("gbbrpm_csr", "GBBRPM (CSR)", PAL_BLUE, "o", "-"),
+    ]
+    for mkey, mlbl, col, mk, ls in mem_specs:
+        sub = pm[pm["method"] == mkey].sort_values("n_nodes")
+        if len(sub) == 0:
+            sub = sp[(sp["method"] == mkey) & (sp["n_nodes"] <= 250)].sort_values("n_nodes")
+        ax.plot(sub["n_nodes"], sub["peak_memory_kb"], color=col, marker=mk, linestyle=ls, label=mlbl)
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_ylim(0.25, 1.5e6)
+    ax.set_xticks([20, 50, 100, 250], ["20", "50", "100", "250"])
+    ax.set_xlabel(r"Nodes $|V|$")
+    ax.set_ylabel("Peak Python memory (KB)")
+    ax.set_title("(d) Peak Heap Memory (tracemalloc)")
+    ax.grid(True, which="major", axis="y")
+    ax.legend(
+        frameon=False,
+        loc="upper left",
+        ncol=2,
+        columnspacing=0.6,
+        handlelength=1.5,
+        fontsize=cfg.font_legend - 0.4,
+    )
+
+    fig.tight_layout(h_pad=1.35, w_pad=1.5)
+    return save_v2_figure(fig, cfg, "fig_v2_scalability_sparse_dense")
+
+
+def _fig_v2_domain_synthesis(cfg: V2TargetConfig, data: dict[str, Any]) -> list[Path]:
+    dsum = data["domain_summary"]
+    ex_dom = data["domain_express_df"].sort_values("tau")
+    ex_12 = data["express_12_df"]
+
+    fig, axes = plt.subplots(
+        1, 3, figsize=(cfg.width_wide, 3.10 if cfg.name == "elsevier_paper1" else 3.25)
+    )
+
+    # Panel (a): DPWH CDO Bitan-ag-Kolambog J_AGORA_CONF reconvergence across Tier-2 B
+    ax = axes[0]
+    dpwh_sweep = pd.DataFrame(
+        dsum["urban_drainage"]["j_agora_conf_reconvergence"]["j_agora_split_b_sweep_tau1"]
+    ).sort_values("B")
+    ax.plot(dpwh_sweep["B"], dpwh_sweep["agora_H"], color=PAL_PURPLE, linestyle=":", marker="v", markersize=3.8, label=r"$H$")
+    ax.plot(dpwh_sweep["B"], dpwh_sweep["agora_R"], color=PAL_BLUE, marker="o", label=r"GBBRPM $R$")
+    ax.plot(dpwh_sweep["B"], dpwh_sweep["agora_pi"], color=PAL_NAVY, linestyle="--", marker="s", markersize=3.8, label=r"Exact $\pi$")
+    ax.plot(dpwh_sweep["B"], dpwh_sweep["agora_T"], color=PAL_GREEN, linestyle="-.", marker="^", markersize=3.8, label=r"$T=M$")
+    ax.fill_between(
+        dpwh_sweep["B"],
+        dpwh_sweep["agora_pi"],
+        dpwh_sweep["agora_R"],
+        color=PAL_ORANGE,
+        alpha=0.25,
+        label=r"$R-\pi$ inflation",
+    )
+    peak_idx = dpwh_sweep["agora_R_minus_pi"].idxmax()
+    peak_row = dpwh_sweep.loc[peak_idx]
+    ax.annotate(
+        f"Max $R-\\pi$\n$={peak_row['agora_R_minus_pi']:.4f}$",
+        xy=(peak_row["B"], peak_row["agora_R"]),
+        xytext=(0.55, 0.22),
+        fontsize=cfg.font_annot - 0.6,
+        color=PAL_ORANGE,
+        fontweight="bold",
+        arrowprops={"arrowstyle": "->", "color": PAL_ORANGE, "lw": 0.9},
+    )
+    ax.set_title("(a) DPWH Drainage\nGate A: PASS | Gate B: FAIL", fontsize=cfg.font_title - 0.5)
+    ax.set_xlabel("Tier-2 $B$ at J_AGORA_SPLIT")
+    ax.set_ylabel("Risk at J_AGORA_CONF ($\\tau=1$)")
+    ax.set_xticks([0.25, 0.50, 0.75, 1.00])
+    ax.set_ylim(0.0, 1.06)
+    ax.grid(True, axis="y")
+    ax.legend(frameon=False, loc="upper left", ncol=1, handlelength=1.4, fontsize=cfg.font_legend - 0.6)
+
+    # Panel (b): Express 4.18.2 bracket & isolated qs/send shared-path reconvergence
+    ax = axes[1]
+    ax.plot(ex_dom["tau"], ex_dom["root_R"], color=PAL_BLUE, marker="o", label=r"Root $R$")
+    ax.plot(ex_dom["tau"], ex_dom["root_pi_ref"], color=PAL_NAVY, linestyle="--", marker="s", markersize=3.6, label=r"Root $\pi$")
+    ax.plot(ex_dom["tau"], ex_dom["root_T"], color=PAL_GREEN, linestyle="-.", marker="^", markersize=3.6, label=r"Root $T$")
+    ax.plot(ex_dom["tau"], ex_dom["root_M"], color=PAL_SLATE, linestyle=":", marker="v", markersize=3.4, label=r"Root $M$")
+    ax.plot(ex_dom["tau"], ex_dom["qs_isolated_root_R_minus_pi"], color=PAL_ORANGE, marker="D", markersize=3.5, label=r"qs $R-\pi$")
+    ax.plot(ex_dom["tau"], ex_dom["send_isolated_root_R_minus_pi"], color=PAL_CRIMSON, linestyle="--", marker="x", markersize=4.0, label=r"send $R-\pi$")
+    med_sp_mc = float(ex_12["speedup_vs_mc_f20"].median())
+    ax.text(
+        0.04,
+        0.96,
+        f"$\\tau=1$: $R=0.9975$\n12-scen.: {med_sp_mc:.0f}x MC",
+        transform=ax.transAxes,
+        ha="left",
+        va="top",
+        fontsize=cfg.font_annot - 0.8,
+        color=PAL_NAVY,
+        bbox={"boxstyle": "round,pad=0.18", "facecolor": "#F8FAFC", "edgecolor": LIGHT, "alpha": 0.92},
+    )
+    ax.set_title("(b) Express 4.18.2\nGate A: PASS | Gate B: N/A", fontsize=cfg.font_title - 0.5)
+    ax.set_xlabel(r"Transmission scale $\tau$")
+    ax.set_ylabel("Root risk & isolated inflation")
+    ax.set_xticks([0.0, 0.25, 0.50, 0.75, 1.0])
+    ax.set_ylim(-0.02, 1.08)
+    ax.grid(True, axis="y")
+    ax.legend(
+        frameon=False,
+        loc="center left",
+        bbox_to_anchor=(0.01, 0.30),
+        ncol=2,
+        columnspacing=0.6,
+        handlelength=1.25,
+        fontsize=cfg.font_legend - 0.9,
+    )
+
+    # Panel (c): Caltech SoCal 28-Bus Component 2 exact tree-equivalence across 43 scenarios
+    ax = axes[2]
+    cal = dsum["electrical_distribution"]["tree_equivalence_verification"]
+    fams = cal["family_counts"]
+    fam_order = [
+        ("multi_source", "Multi-src"),
+        ("disturbance_location", "Location"),
+        ("measured_load_scale", "Load scale"),
+        ("uniform_transmission", "Transm."),
+        ("root_severity", "Severity"),
+        ("reference", "Baseline"),
+    ]
+    labels_c = [lbl for _, lbl in fam_order]
+    counts_c = [int(fams[k]) for k, _ in fam_order]
+    y_c = np.arange(len(labels_c))
+    bars = ax.barh(y_c, counts_c, color=PAL_GREEN, alpha=0.86, height=0.62)
+    for bar, cnt in zip(bars, counts_c):
+        ax.text(
+            cnt + 0.35,
+            bar.get_y() + bar.get_height() / 2.0,
+            str(cnt),
+            va="center",
+            ha="left",
+            fontsize=cfg.font_annot - 0.4,
+            color=PAL_NAVY,
+        )
+    ax.invert_yaxis()
+    ax.set_yticks(y_c, labels_c)
+    ax.set_xlim(0, 19.5)
+    ax.set_xlabel("Verified exact scenarios")
+    ax.set_title("(c) Caltech Comp. 2\nGate A: PASS | Gate B: FAIL", fontsize=cfg.font_title - 0.5)
+    ax.grid(True, axis="x")
+    ax.set_axisbelow(True)
+    ax.text(
+        0.96,
+        0.08,
+        "Arborescence (12N/11E)\n43/43 exact:\n$\\max|R-\\pi|=2.2\\times 10^{-16}$\n$\\max|T-R|=0.0$\n0 violations",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=cfg.font_annot - 0.7,
+        color=PAL_NAVY,
+        bbox={"boxstyle": "round,pad=0.22", "facecolor": "#ECFDF5", "edgecolor": PAL_GREEN, "linewidth": 0.75},
+    )
+
+    fig.tight_layout(w_pad=1.2)
+    return save_v2_figure(fig, cfg, "fig_v2_domain_synthesis")
+
+
+# -----------------------------------------------------------------------------
+# 7 Core v2 booktabs LaTeX Tables
+# -----------------------------------------------------------------------------
+
+
+def _table_v2_inventory_and_assertions(cfg: V2TargetConfig, data: dict[str, Any]) -> Path:
+    dev = data["dev_summary"]
+    hs = data["heldout_summary"]
+    dsum = data["domain_summary"]
+
+    rows = [
+        [
+            "Matched branch controls",
+            "Dev / exact",
+            "560",
+            "Eq. (3-15) exact",
+            "0",
+            "0",
+            "0",
+        ],
+        [
+            "Uniform DAG controls",
+            "Dev (41--45)",
+            "720",
+            r"100k MC ($60$ graphs)",
+            "0",
+            "0",
+            str(dev["dag_uniform_720"]["empty_hoeffding_intersections_total_nodes"]),
+        ],
+        [
+            "Heterogeneous DAG controls",
+            "Dev (41)",
+            "24",
+            r"100k MC ($12$ graphs)",
+            "0",
+            "0",
+            str(dev["dag_hetero_24"]["empty_hoeffding_intersections_total_nodes"]),
+        ],
+        [
+            "Held-out uniform DAGs",
+            "Eval (1001--1020)",
+            "2,880",
+            r"100k MC ($240$ graphs)",
+            "0",
+            "0",
+            str(hs["heldout_uniform_2880"]["overall"]["empty_hoeffding_intersections_total_nodes"]),
+        ],
+        [
+            "Held-out heterogeneous DAGs",
+            "Eval (1001--1005)",
+            "120",
+            r"100k MC ($60$ graphs)",
+            "0",
+            "0",
+            str(hs["heldout_hetero_120"]["overall"]["empty_hoeffding_intersections_total_nodes"]),
+        ],
+        [
+            "Express 4.18.2 stochastic",
+            "Real topology",
+            "12",
+            "100k MC (71N/128E)",
+            "0",
+            "0",
+            str(hs["heldout_express_12"]["overall"]["empty_hoeffding_intersections_total_nodes"]),
+        ],
+        [r"\midrule"],
+        [
+            r"\textbf{Primary inventory total}",
+            r"\textbf{Dev + Eval}",
+            r"\textbf{4,316}",
+            r"\textbf{88.86B edge-trials}",
+            r"\textbf{0}",
+            r"\textbf{0}",
+            str(
+                dev["global_assertions"]["empty_hoeffding_intersections_total_nodes"]
+                + hs["global_assertions"]["empty_hoeffding_intersections_primary_total_nodes"]
+            ),
+        ],
+        [
+            "Precision audits (1M MC)",
+            "Eval (1001)",
+            "48",
+            "1M MC (indep. seed)",
+            "0",
+            "0",
+            str(hs["global_assertions"]["empty_hoeffding_intersections_audit_1m_total_nodes"]),
+        ],
+        [
+            "Real-domain instantiations",
+            "3 domains",
+            str(
+                dsum["urban_drainage"]["tier2_scenario_evaluation"]["scenario_count"]
+                + len(dsum["software_dependency"]["tau_sweep"])
+                + dsum["electrical_distribution"]["tree_equivalence_verification"]["scenario_count"]
+            ),
+            "Exact / 100k MC",
+            "0",
+            "0",
+            "0",
+        ],
+    ]
+    return write_v2_table(
+        cfg,
+        "table_v2_inventory_and_assertions.tex",
+        caption="Frozen v2.0.0 experimental inventory, split discipline, and hard protocol assertions.",
+        label="tab:v2-inventory-assertions",
+        headers=[
+            "Suite",
+            "Split / Seeds",
+            "Scenarios",
+            "Reference",
+            "Bracket viol.",
+            "False certs",
+            "Empty CI nodes",
+        ],
+        rows=rows,
+        column_spec="llrrccc",
+        wide=True,
+        note=(
+            "Bracket violations check $M_j \\le T_j \\le R_j \\le H_j$ across all nodes (tolerance $10^{-12}$). "
+            "False certifications cover Stage 1 and Stage 2 across $f \\in \\{0.10, 0.20, 0.30\\}$ against both analytic $[T_j,R_j]$ "
+            "and nonempty intersected intervals. Empty Hoeffding intersections are recorded transparently without silent repair "
+            "(1 non-candidate source node in dev; 1 non-candidate source node in held-out; 0 candidate nodes)."
+        ),
+    )
+
+
+def _table_v2_bracket_tightness(cfg: V2TargetConfig, data: dict[str, Any]) -> Path:
+    u = data["heldout_summary"]["heldout_uniform_2880"]
+    rows: list[list[str]] = []
+    for fam in FAMILIES_ORDER:
+        for sz in [20, 50, 100, 250]:
+            bt = u["by_family_size"][f"{fam}|n={sz}"]["bracket_tightness"]
+            rows.append(
+                [
+                    FAMILY_SHORT[fam],
+                    str(sz),
+                    _fmt_mean_sd(bt["W_mean"], 4),
+                    _fmt_med_iqr(bt["W_mean"], 4),
+                    _fmt_mean_sd(bt["tree_width_mean"], 4),
+                    _fmt_mean_sd(bt["upper_slack_R_minus_pi_mean"], 4),
+                    _fmt_mean_sd(bt["lower_slack_pi_minus_T_mean"], 4),
+                ]
+            )
+        rows.append([r"\midrule"])
+    bt_all = u["overall"]["bracket_tightness"]
+    rows.append(
+        [
+            r"\textbf{Overall}",
+            r"\textbf{240}",
+            r"\textbf{" + _fmt_mean_sd(bt_all["W_mean"], 4) + "}",
+            r"\textbf{" + _fmt_med_iqr(bt_all["W_mean"], 4) + "}",
+            r"\textbf{" + _fmt_mean_sd(bt_all["tree_width_mean"], 4) + "}",
+            r"\textbf{" + _fmt_mean_sd(bt_all["upper_slack_R_minus_pi_mean"], 4) + "}",
+            r"\textbf{" + _fmt_mean_sd(bt_all["lower_slack_pi_minus_T_mean"], 4) + "}",
+        ]
+    )
+    return write_v2_table(
+        cfg,
+        "table_v2_bracket_tightness.tex",
+        caption="Held-out (2,880 scenarios; 240 graph replicates) receiving-state bracket widths and slacks by family and size.",
+        label="tab:v2-bracket-tightness",
+        headers=[
+            "Family",
+            "$|V|$",
+            r"$W_j$ (Mean $\pm$ SD)",
+            r"$W_j$ (Med. [IQR])",
+            r"$R_j - T_j$ (Mean $\pm$ SD)",
+            r"$R_j - \pi_j$ (Mean $\pm$ SD)",
+            r"$\pi_j - T_j$ (Mean $\pm$ SD)",
+        ],
+        rows=rows,
+        column_spec="lrrrrrr",
+        wide=True,
+        note=(
+            "Statistics are computed over independent graph replicates ($n=20$ per family $\\times$ size stratum; "
+            "$n=240$ overall) after averaging across the 12 $(w, B)$ conditions on each topology."
+        ),
+    )
+
+
+def _table_v2_comparator_ranking(cfg: V2TargetConfig, data: dict[str, Any]) -> Path:
+    u_ov = data["heldout_summary"]["heldout_uniform_2880"]["overall"]
+    rev = u_ov["reversals"]
+    rows: list[list[str]] = []
+    for c in COMPARATORS_ORDER:
+        r10 = u_ov["ranking_by_budget"]["f10"]["regret"][c]
+        r20 = u_ov["ranking_by_budget"]["f20"]["regret"][c]
+        r30 = u_ov["ranking_by_budget"]["f30"]["regret"][c]
+        c20 = u_ov["ranking_by_budget"]["f20"]["capture"][c]
+        sp = u_ov["spearman"][c]
+        if c == "R":
+            delta_str = "--"
+        else:
+            pd_st = u_ov["paired_method_differences_replicate"]["regret"]["f20"][f"R_minus_{c}"]
+            delta_str = f"{pd_st['mean']:+.4f} ({100.0 * pd_st['fraction_replicates_R_lower_regret']:.1f}\\%)"
+        rows.append(
+            [
+                COMPARATOR_TEX[c],
+                _fmt_mean_sd(r10, 4),
+                _fmt_mean_sd(r20, 4),
+                _fmt_mean_sd(r30, 4),
+                f"{100.0 * c20['mean']:.2f}\\%",
+                _fmt_mean_sd(sp, 4),
+                delta_str,
+            ]
+        )
+    return write_v2_table(
+        cfg,
+        "table_v2_comparator_ranking.tex",
+        caption="Held-out (2,880 scenarios; 240 replicates) fixed-budget regret, capture, and rank correlation across comparators.",
+        label="tab:v2-comparator-ranking",
+        headers=[
+            "Comparator",
+            r"Regret $f=0.10$",
+            r"Regret $f=0.20$",
+            r"Regret $f=0.30$",
+            r"Capture $f=0.20$",
+            r"Spearman $\rho$",
+            r"$\Delta\mathrm{Regret}_{0.20}$ ($R$ wins)",
+        ],
+        rows=rows,
+        column_spec="lrrrrrr",
+        wide=True,
+        note=(
+            "Graph-replicate means $\\pm$ SD ($n=240$). Negative $\\Delta\\mathrm{Regret}_{0.20} = \\mathrm{Regret}(R) - \\mathrm{Regret}(\\text{comp})$ "
+            "indicates lower regret for GBBRPM ($R_j$); parentheses give percentage of replicates where $R_j$ strictly achieves lower regret. "
+            f"Interval-resolved pairwise reversals for $R_j$: pooled rate {100.0 * rev['pooled_reversal_rate_R']:.3f}\\% "
+            f"({rev['total_reversals_R']:,} / {rev['total_resolved_strict_pairs_R']:,} resolved strict pairs; "
+            f"{rev['scenarios_with_reversals']}/2,880 scenarios)."
+        ),
+    )
+
+
+def _table_v2_certified_screening(cfg: V2TargetConfig, data: dict[str, Any]) -> Path:
+    u = data["heldout_summary"]["heldout_uniform_2880"]
+    rows: list[list[str]] = []
+    for fam in FAMILIES_ORDER:
+        for tag, flbl in [("f10", "0.10"), ("f20", "0.20"), ("f30", "0.30")]:
+            sc = u["by_family"][fam]["certified_screening"][tag]
+            rows.append(
+                [
+                    FAMILY_SHORT[fam],
+                    flbl,
+                    _fmt_pct_mean_sd(sc["res_s1"], 1),
+                    _fmt_pct_mean_sd(sc["res_s2"], 1),
+                    f"+{100.0 * sc['band_reduction']['mean']:.1f} pp",
+                    f"{100.0 * sc['full_cert_s2_rate']['mean']:.1f}\\%",
+                    f"{sc['speedup_vs_full_T']['median']:.2f}$\\times$ [{sc['speedup_vs_full_T']['iqr']:.2f}]",
+                    f"{sc['speedup_vs_mc']['median']:.1f}$\\times$ [{sc['speedup_vs_mc']['iqr']:.1f}]",
+                ]
+            )
+        rows.append([r"\midrule"])
+    for tag, flbl in [("f10", "0.10"), ("f20", "0.20"), ("f30", "0.30")]:
+        sc = u["overall"]["certified_screening"][tag]
+        rows.append(
+            [
+                r"\textbf{Overall}",
+                r"\textbf{" + flbl + "}",
+                r"\textbf{" + _fmt_pct_mean_sd(sc["res_s1"], 1) + "}",
+                r"\textbf{" + _fmt_pct_mean_sd(sc["res_s2"], 1) + "}",
+                r"\textbf{+" + f"{100.0 * sc['band_reduction']['mean']:.1f}" + " pp}",
+                r"\textbf{" + f"{100.0 * sc['full_cert_s2_rate']['mean']:.1f}" + r"\%}",
+                r"\textbf{" + f"{sc['speedup_vs_full_T']['median']:.2f}$\\times$ [{sc['speedup_vs_full_T']['iqr']:.2f}]" + "}",
+                r"\textbf{" + f"{sc['speedup_vs_mc']['median']:.1f}$\\times$ [{sc['speedup_vs_mc']['iqr']:.1f}]" + "}",
+            ]
+        )
+    return write_v2_table(
+        cfg,
+        "table_v2_certified_screening.tex",
+        caption="Two-Stage Deterministic Certified Top-$k$ Screening resolution, full certification, and wall-clock speedups (held-out 2,880).",
+        label="tab:v2-certified-screening",
+        headers=[
+            "Family",
+            "$f$",
+            r"$\mathrm{Res}_{S1}$",
+            r"$\mathrm{Res}_{S2}$",
+            r"$\Delta_{\mathrm{band}}$",
+            "Full Cert. S2",
+            r"Speedup vs. $T_j$",
+            "Speedup vs. MC",
+        ],
+        rows=rows,
+        column_spec="lrrrrrrr",
+        wide=True,
+        note=(
+            "Resolution rates are graph-replicate means $\\pm$ SD; speedups are replicate medians [IQR]. "
+            "Across all 2,880 held-out scenarios and all three budgets ($8,640$ screening evaluations), "
+            "false certifications equal 0 against both analytic $[T_j,R_j]$ and intersected Hoeffding intervals."
+        ),
+    )
+
+
+def _table_v2_hetero_and_audits(cfg: V2TargetConfig, data: dict[str, Any]) -> Path:
+    hs = data["heldout_summary"]
+    ph = hs["paired_hetero_vs_uniform_w020"]
+    pa = hs["precision_audits_48"]
+
+    rows: list[list[str]] = [
+        [r"\multicolumn{7}{l}{\textbf{Part A: Paired Heterogeneous ($n=120$) minus Uniform $w=0.20$ Replicate Deltas (Mean $\pm$ SD)}} \\"],
+        [r"\midrule"],
+    ]
+    for scope, lbl in [
+        ("forward", "Forward (20 rep.)"),
+        ("layered", "Layered (20 rep.)"),
+        ("preferential_attachment", "Pref. Att. (20 rep.)"),
+        ("overall", r"\textbf{Overall (60 rep.)}"),
+    ]:
+        rd = (ph["overall"] if scope == "overall" else ph["by_family"][scope])["replicate_deltas"]
+        rows.append(
+            [
+                lbl,
+                f"{rd['W_mean']['mean']:+.4f}",
+                f"{rd['tree_width_mean']['mean']:+.4f}",
+                f"{rd['regret_R_f20']['mean']:+.4f}",
+                f"{rd['spearman_R']['mean']:+.4f}",
+                f"{100.0 * rd['res_s1_f20']['mean']:+.1f} pp",
+                f"{100.0 * rd['res_s2_f20']['mean']:+.1f} pp",
+            ]
+        )
+    rows.extend(
+        [
+            [r"\midrule"],
+            [r"\multicolumn{7}{l}{\textbf{Part B: Preselected 1M-Trial Precision Audits ($n=48$, Seed 1001, $w \in \{0.05, 0.10\}$)}} \\"],
+            [r"\midrule"],
+            [
+                r"\textbf{Stratum}",
+                r"\textbf{$h_{100k}$}",
+                r"\textbf{$h_{1M}$}",
+                r"\textbf{Max $|\Delta\hat{\pi}|$}",
+                r"\textbf{Mean $|\Delta\hat{\pi}|$}",
+                r"\textbf{In $h_{1M}$ CI}",
+                r"\textbf{Pair Gain}",
+            ],
+            [r"\midrule"],
+        ]
+    )
+    for sz in ["20", "50", "100", "250", "overall"]:
+        blk = pa["overall"] if sz == "overall" else pa["by_size"][sz]
+        lbl = r"\textbf{All ($n=48$)}" if sz == "overall" else f"$|V|={sz}$ ($n=12$)"
+        rows.append(
+            [
+                lbl,
+                f"{blk['h_100k']['mean']:.4f}",
+                f"{blk['h_1m']['mean']:.4f}",
+                f"{blk['max_abs_diff_100k_vs_1m']['mean']:.4f}",
+                f"{blk['mean_abs_diff_100k_vs_1m']['mean']:.5f}",
+                f"{blk['pct_nodes_100k_inside_1m_ci']['mean']:.1f}\\%",
+                f"+{blk['resolved_pair_gain_1m_minus_100k']:,}",
+            ]
+        )
+    return write_v2_table(
+        cfg,
+        "table_v2_hetero_and_audits.tex",
+        caption="Paired heterogeneous-weight deltas ($n=120$) and independent 1M-trial precision audit agreement ($n=48$).",
+        label="tab:v2-hetero-audits",
+        headers=[
+            "Stratum",
+            r"$\Delta W$",
+            r"$\Delta(R-T)$",
+            r"$\Delta\mathrm{Regret}_{0.20}$",
+            r"$\Delta\rho(R)$",
+            r"$\Delta\mathrm{Res}_{S1}$",
+            r"$\Delta\mathrm{Res}_{S2}$",
+        ],
+        rows=rows,
+        column_spec="lrrrrrr",
+        wide=True,
+        note=(
+            "Part A compares matched heterogeneous-weight ($w \\in \\{0.10, 0.20, 0.30\\}$, exact mean $0.20$) against uniform $w=0.20$ topologies. "
+            "Part B compares independent $100\\text{k}$ vs. $1\\text{M}$ MC references: 100.0\\% of nodes lie inside $h_{100k}$ and inside $h_{100k}+h_{1M}$, "
+            "with 0 empty Hoeffding intersections, 0 reversals, and 0 false certifications across all 48 audits."
+        ),
+    )
+
+
+def _table_v2_scalability(cfg: V2TargetConfig, data: dict[str, Any]) -> Path:
+    ssum = data["scal_summary"]
+    rows: list[list[str]] = []
+
+    def _cell_ms(blk: dict[str, Any]) -> str:
+        m, iq = blk["median_ms"], blk["iqr_ms"]
+        if m < 1.0:
+            return f"{m:.3f} [{iq:.3f}]"
+        if m < 100.0:
+            return f"{m:.2f} [{iq:.2f}]"
+        return f"{m:.1f} [{iq:.1f}]"
+
+    # Sparse series
+    rows.append([r"\multicolumn{8}{l}{\textbf{Sparse Series ($|E|=3|V|$, seed=41; 30 reps): Median [IQR] ms}} \\"])
+    rows.append([r"\midrule"])
+    for sz in ["20", "50", "100", "250", "500", "1000"]:
+        entry = ssum["sparse_series"][sz]
+        m = entry["methods"]
+        rows.append(
+            [
+                f"{entry['n_nodes']} / {entry['n_edges']}",
+                _cell_ms(m["gbbrpm_csr"]),
+                _cell_ms(m["gbbrpm_core_df"]),
+                _cell_ms(m["abbe_lower"]),
+                _cell_ms(m["ancestry_diagnostic"]),
+                _cell_ms(m["two_stage_screening_f20"]),
+                _cell_ms(m["full_tree_T"]),
+                f"{m['gbbrpm_csr']['peak_memory_kb']:.1f} KB",
+            ]
+        )
+
+    # Dense series
+    rows.append([r"\midrule"])
+    rows.append([r"\multicolumn{8}{l}{\textbf{Dense Series (25\% DAG density, seed=41; 30 reps): Median [IQR] ms}} \\"])
+    rows.append([r"\midrule"])
+    for sz in ["20", "50", "100", "250"]:
+        entry = ssum["dense_series"][sz]
+        m = entry["methods"]
+        rows.append(
+            [
+                f"{entry['n_nodes']} / {entry['n_edges']}",
+                _cell_ms(m["gbbrpm_csr"]),
+                _cell_ms(m["gbbrpm_core_df"]),
+                _cell_ms(m["abbe_lower"]),
+                _cell_ms(m["ancestry_diagnostic"]),
+                _cell_ms(m["two_stage_screening_f20"]),
+                _cell_ms(m["full_tree_T"]),
+                f"{m['gbbrpm_csr']['peak_memory_kb']:.1f} KB",
+            ]
+        )
+
+    # Paired MC reference summary
+    rows.append([r"\midrule"])
+    rows.append([r"\multicolumn{8}{l}{\textbf{Paired 100k MC Reference (Forward, seed=1001, $w=0.50, B=0.50$; 5 MC reps)}} \\"])
+    rows.append([r"\midrule"])
+    for sz in ["20", "50", "100", "250"]:
+        p = ssum["paired_mc_reference"][sz]
+        rows.append(
+            [
+                f"{p['n_nodes']} / {p['n_edges']}",
+                f"{p['gbbrpm_csr_median_ms']:.3f} ms",
+                f"{p['gbbrpm_core_df_median_ms']:.2f} ms",
+                f"MC: {p['mc_ref_100k_median_ms']:.1f} ms",
+                f"CSR: {p['speedup_mc_vs_gbbrpm_csr']:.0f}$\\times$",
+                f"2-Stg: {p['speedup_mc_vs_two_stage_f20']:.1f}$\\times$",
+                f"{p['edge_trials_per_sec']/1e6:.0f}M e-tr/s",
+                f"{p['mc_ref_100k_peak_memory_kb']/1024.0:.1f} MB (MC)",
+            ]
+        )
+
+    fit_sp = ssum["scaling_fits_vs_V_plus_E"]["sparse"]["gbbrpm_csr"]
+    fit_dn = ssum["scaling_fits_vs_V_plus_E"]["dense"]["gbbrpm_csr"]
+    fit_T = ssum["scaling_fits_vs_V_plus_E"]["sparse"]["full_tree_T"]
+    return write_v2_table(
+        cfg,
+        "table_v2_scalability.tex",
+        caption="Computational runtime (median [IQR] ms) and peak Python heap memory across sparse, dense, and paired 100k MC benchmarks.",
+        label="tab:v2-scalability",
+        headers=[
+            r"$|V| / |E|$",
+            "CSR",
+            "Core DF",
+            "Abbe / MC",
+            "Anc. / CSR$\\times$",
+            "2-Stage / 2S$\\times$",
+            r"Full $T_j$ / Thr.",
+            "Peak Mem.",
+        ],
+        rows=rows,
+        column_spec="lrrrrrrr",
+        wide=True,
+        note=(
+            f"Log-log scaling vs. $|V|+|E|$: GBBRPM (CSR) achieves near-linear exponent $b={fit_sp['exponent']:.3f}$ ($R^2={fit_sp['r2_log_log']:.4f}$) "
+            f"on sparse and $b={fit_dn['exponent']:.3f}$ ($R^2={fit_dn['r2_log_log']:.4f}$) on dense DAGs, whereas full-graph $T_j$ scales at "
+            f"$b={fit_T['exponent']:.3f}$ ($R^2={fit_T['r2_log_log']:.4f}$). Peak memory measured via isolated \\texttt{{tracemalloc}} passes."
+        ),
+    )
+
+
+def _table_v2_domain_cases(cfg: V2TargetConfig, data: dict[str, Any]) -> Path:
+    dsum = data["domain_summary"]
+    ud = dsum["urban_drainage"]
+    sw = dsum["software_dependency"]
+    el = dsum["electrical_distribution"]
+
+    rows = [
+        [
+            "Urban Drainage",
+            "DPWH CDO Bitan-ag--Kolambog",
+            "11 / 11 (Reconv.)",
+            "PASS / FAIL",
+            str(ud["tier2_scenario_evaluation"]["scenario_count"]),
+            (
+                f"$S \\in [{ud['graph_summary']['s_min']:.3f}, {ud['graph_summary']['s_max']:.3f}]$; "
+                f"J\\_AGORA\\_CONF max $R-\\pi={ud['j_agora_conf_reconvergence']['exact_max_R_minus_pi']:.4f}$; "
+                f"S2 res. {100.0*ud['tier2_scenario_evaluation']['two_stage_screening_f20_mean_res_s2']:.1f}\\%"
+            ),
+            "Restricted agency data; Tier-2 exploratory only (no field-flood validation)",
+        ],
+        [
+            "Software Dependency",
+            "npm Express 4.18.2 (OSV)",
+            "71 / 128 (Reconv.)",
+            "PASS / N/A",
+            "5 ($\\tau$) + 12 (stoch.)",
+            (
+                f"Root $R(\\tau=1)={sw['verified_root_risk_tau1']:.6f}$ (exact $\\pi=0.993408$); "
+                f"isolated qs $R-\\pi=0.250$, send $0.188$"
+            ),
+            "Public lockfile/OSV; advisories define inputs $B_i$, not exploit outcomes",
+        ],
+        [
+            "Electrical Distribution",
+            "Caltech SoCal 28-Bus Comp. 2",
+            "12 / 11 (Tree)",
+            "PASS / FAIL",
+            str(el["tree_equivalence_verification"]["scenario_count"]),
+            (
+                f"Verified arborescence: 43/43 exact with "
+                f"$\\max|R-\\pi|=2.2\\times 10^{{-16}} < 10^{{-12}}$, "
+                f"$\\max|T-R|=0.0$"
+            ),
+            "Restricted telemetry (post-event normal window); no fault-prediction claim",
+        ],
+    ]
+    return write_v2_table(
+        cfg,
+        "table_v2_domain_cases.tex",
+        caption="Strictly non-pooled cross-domain mechanism synthesis, eligibility gates, and evidence boundaries.",
+        label="tab:v2-domain-cases",
+        headers=[
+            "Domain",
+            "Case",
+            r"$|V|/|E|$",
+            "Gate A / B",
+            "Scen.",
+            "Key verified mechanism finding",
+            "Evidence boundary",
+        ],
+        rows=rows,
+        column_spec=r"llccc p{4.6cm} p{3.6cm}",
+        wide=True,
+        note=(
+            "All three domains exhibit 0 bracket violations, 0 Abbe violations, and 0 false certifications. "
+            "No raw DPWH conduit tables, no raw Caltech phasor measurements, and no PII are exported; "
+            "metrics are strictly non-pooled across domains."
+        ),
+    )
+
+
+def update_paper_v2_manifest() -> Path:
+    """Write cryptographic SHA-256 manifest covering all v2 inputs and both target outputs."""
+    input_files: list[Path] = [require(FREEZE_MANIFEST_PATH)]
+    for folder in (DEV_PILOT_DIR, HELDOUT_DIR):
+        if folder.exists():
+            for path in sorted(folder.iterdir()):
+                if path.is_file():
+                    input_files.append(path)
+
+    input_hashes = {
+        path.relative_to(ROOT).as_posix(): sha256(path) for path in sorted(set(input_files))
+    }
+
+    targets_payload: dict[str, Any] = {}
+    total_figures = 0
+    total_tables = 0
+    for target_name, cfg in V2_TARGETS.items():
+        fig_dir = cfg.out_dir / "figures"
+        tab_dir = cfg.out_dir / "tables"
+        figs: list[dict[str, Any]] = []
+        tabs: list[dict[str, Any]] = []
+        if fig_dir.exists():
+            for p in sorted(fig_dir.iterdir()):
+                if p.is_file() and p.suffix.lower() in (".pdf", ".png"):
+                    figs.append(
+                        {
+                            "path": p.relative_to(ROOT).as_posix(),
+                            "stem": p.stem,
+                            "format": p.suffix.lstrip(".").lower(),
+                            "bytes": p.stat().st_size,
+                            "sha256": sha256(p),
+                        }
+                    )
+        if tab_dir.exists():
+            for p in sorted(tab_dir.iterdir()):
+                if p.is_file() and p.suffix.lower() == ".tex":
+                    tabs.append(
+                        {
+                            "path": p.relative_to(ROOT).as_posix(),
+                            "name": p.name,
+                            "bytes": p.stat().st_size,
+                            "sha256": sha256(p),
+                        }
+                    )
+        targets_payload[target_name] = {"figures": figs, "tables": tabs}
+        total_figures += len(figs)
+        total_tables += len(tabs)
+
+    manifest = {
+        "generator": "scripts/generate_paper_outputs.py",
+        "version": "2.0.0",
+        "protocol_freeze_manifest": {
+            "path": FREEZE_MANIFEST_PATH.relative_to(ROOT).as_posix(),
+            "sha256": sha256(FREEZE_MANIFEST_PATH),
+        },
+        "input_sha256": input_hashes,
+        "targets": targets_payload,
+        "counts": {
+            "inputs": len(input_hashes),
+            "thesis_figures": len(targets_payload["thesis"]["figures"]),
+            "thesis_tables": len(targets_payload["thesis"]["tables"]),
+            "elsevier_paper1_figures": len(targets_payload["elsevier_paper1"]["figures"]),
+            "elsevier_paper1_tables": len(targets_payload["elsevier_paper1"]["tables"]),
+            "total_figures": total_figures,
+            "total_tables": total_tables,
+        },
+        "privacy_guardrail": (
+            "Generated exclusively from non-restricted dev_pilot and heldout_eval artifacts; "
+            "zero raw DPWH conduit tables, zero raw Caltech phasor measurements, and zero PII."
+        ),
+    }
+
+    V2_ROOT.mkdir(parents=True, exist_ok=True)
+    manifest_path = V2_ROOT / "paper_v2_manifest.json"
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    return manifest_path
+
+
+def run_v2_target(target_name: str) -> None:
+    cfg = V2_TARGETS[target_name]
+    configure_v2_style(cfg)
+    data = _load_v2_inputs()
+
+    figure_paths: list[Path] = []
+    figure_paths += _fig_v2_matched_branch_controls(cfg, data)
+    figure_paths += _fig_v2_bracket_tightness(cfg, data)
+    figure_paths += _fig_v2_fixed_budget_ranking(cfg, data)
+    figure_paths += _fig_v2_certified_screening(cfg, data)
+    figure_paths += _fig_v2_w_self_diagnosis(cfg, data)
+    figure_paths += _fig_v2_hetero_and_precision_audit(cfg, data)
+    figure_paths += _fig_v2_scalability_sparse_dense(cfg, data)
+    figure_paths += _fig_v2_domain_synthesis(cfg, data)
+
+    table_paths: list[Path] = [
+        _table_v2_inventory_and_assertions(cfg, data),
+        _table_v2_bracket_tightness(cfg, data),
+        _table_v2_comparator_ranking(cfg, data),
+        _table_v2_certified_screening(cfg, data),
+        _table_v2_hetero_and_audits(cfg, data),
+        _table_v2_scalability(cfg, data),
+        _table_v2_domain_cases(cfg, data),
+    ]
+
+    manifest_path = update_paper_v2_manifest()
+    print(
+        f"[v2:{target_name}] Generated {len(figure_paths)} figure files "
+        f"({len(figure_paths)//2} stems x PDF+PNG), {len(table_paths)} LaTeX tables, "
+        f"and updated {manifest_path.relative_to(ROOT).as_posix()}"
+    )
+
+
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        description="Generate deterministic publication figures and LaTeX tables for GBBRPM."
+    )
+    parser.add_argument(
+        "--target",
+        choices=("legacy", "thesis", "elsevier_paper1", "all"),
+        default="legacy",
+        help="Output target to generate (default: legacy -> results/paper/).",
+    )
+    args = parser.parse_args(argv)
+
+    if args.target == "legacy":
+        run_legacy_target()
+    elif args.target == "thesis":
+        run_v2_target("thesis")
+    elif args.target == "elsevier_paper1":
+        run_v2_target("elsevier_paper1")
+    elif args.target == "all":
+        run_legacy_target()
+        run_v2_target("thesis")
+        run_v2_target("elsevier_paper1")
 
 
 if __name__ == "__main__":
