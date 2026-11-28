@@ -1,0 +1,358 @@
+{
+  "counts": {
+    "elsevier_paper1_figures": 16,
+    "elsevier_paper1_tables": 7,
+    "inputs": 16,
+    "thesis_figures": 16,
+    "thesis_tables": 7,
+    "total_figures": 32,
+    "total_tables": 14
+  },
+  "generator": "scripts/generate_paper_outputs.py",
+  "input_sha256": {
+    "results/dev_pilot/dev_compute_pilot.csv": "939f350534497bbe699f228fcb668badc39efacea98d4d97e34b87679e9abe7b",
+    "results/dev_pilot/dev_compute_pilot_summary.json": "3bc58d2e96ff1da95ddb06f3b36a0a3fa56ff159960ffc35bbbb7a0fdd41adb5",
+    "results/dev_pilot/dev_controls_branch_560.csv": "541a8bd04bfbfeb8c4e00430c9d71ae127d7cc96c2b9d5d56698998e6e1644d3",
+    "results/dev_pilot/dev_controls_dag_720.csv": "1b49f5eb1148658c256976fe058cdcc123fd8a81f02b227ff8ce11daf51da13e",
+    "results/dev_pilot/dev_controls_hetero_24.csv": "0b2bf59ee50711fd16ca09c3fc3e6656d8b3140383f730673b64d8fe00ca3b68",
+    "results/dev_pilot/dev_controls_summary.json": "ed97b662e20cac9aa252c15affaa923cd6db5d0763d6a410de54565b9062a8b7",
+    "results/heldout_eval/domain_cases_v2_summary.json": "565b065a5681d833b6721b17147228fb44c8d974859f72dde20243f2f771cfad",
+    "results/heldout_eval/domain_express_v2.csv": "eab2ac3bc4f46a6105dd10d079e3cb74934cbdee6c8006ad4562c2093630d55c",
+    "results/heldout_eval/heldout_eval_summary.json": "d15f3a7480a9be0b7eeb715ea5deea2b514c170804c308181c9897d09e48e7bd",
+    "results/heldout_eval/heldout_express_12.csv": "7e85f4ff868bcc516a76383720780f19de4c5f770f1afece1f028c6832c6ded1",
+    "results/heldout_eval/heldout_hetero_120.csv": "954cac75d6abef3e793a8ce8a35ed83adbf34786aa183ffb1b5aefe1aa4bb17c",
+    "results/heldout_eval/heldout_precision_audits_48.csv": "4ee43b10881f0b1b64fcb5e7d15dd5d53a31e3063b81c8af0ad695b8dd74f6ca",
+    "results/heldout_eval/heldout_uniform_2880.csv": "4a076598b8bb09df9acc1cce7154b2a513576c403ad3c5c3a80e9bfd8ddd01e3",
+    "results/heldout_eval/scalability_v2.csv": "548f77fdf5210f214c447b869b60dc84f2cfa28bb84cd2d92336559306bc4ec6",
+    "results/heldout_eval/scalability_v2_summary.json": "34fef6dfe209bad8a586a6b2f6112c7c143c55a250ae243518fb62688ece8f6e",
+    "results/protocol_freeze/protocol_freeze_manifest_v2.0.0.json": "4768993e2f1b8dc6e75745d44dd8c68a92081d78e0430800f4539c4d5521e0bc"
+  },
+  "privacy_guardrail": "Generated exclusively from non-restricted dev_pilot and heldout_eval artifacts; zero raw DPWH conduit tables, zero raw Caltech phasor measurements, and zero PII.",
+  "protocol_freeze_manifest": {
+    "path": "results/protocol_freeze/protocol_freeze_manifest_v2.0.0.json",
+    "sha256": "4768993e2f1b8dc6e75745d44dd8c68a92081d78e0430800f4539c4d5521e0bc"
+  },
+  "targets": {
+    "elsevier_paper1": {
+      "figures": [
+        {
+          "bytes": 31530,
+          "format": "pdf",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_bracket_tightness.pdf",
+          "sha256": "dcae84555e53ea24dbaaade9844bb2d2f88670ec45db8a68b32efeb8937f1f34",
+          "stem": "fig_v2_bracket_tightness"
+        },
+        {
+          "bytes": 175672,
+          "format": "png",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_bracket_tightness.png",
+          "sha256": "890c662e5ae4d54a01c07226c83dd742017438585c5624e8bff366cb7cc88517",
+          "stem": "fig_v2_bracket_tightness"
+        },
+        {
+          "bytes": 39809,
+          "format": "pdf",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_certified_screening.pdf",
+          "sha256": "ddf50ba69fec075d472cf08ec6d27e37f08423c0c0b28c826200af4941a31d4b",
+          "stem": "fig_v2_certified_screening"
+        },
+        {
+          "bytes": 271946,
+          "format": "png",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_certified_screening.png",
+          "sha256": "f0b2a21dcf16d0974de4875d8f5e8b9f822cad8723f008d214cefb6baf0c9534",
+          "stem": "fig_v2_certified_screening"
+        },
+        {
+          "bytes": 38002,
+          "format": "pdf",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_domain_synthesis.pdf",
+          "sha256": "40f5476a276a52a1b88700efa38da7b1ad9db20468a17cd04dee536d3664af52",
+          "stem": "fig_v2_domain_synthesis"
+        },
+        {
+          "bytes": 229315,
+          "format": "png",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_domain_synthesis.png",
+          "sha256": "8637eb9c7c26b94f118092ded4a34726f47d79f943ef135edec37e66bc22f279",
+          "stem": "fig_v2_domain_synthesis"
+        },
+        {
+          "bytes": 35529,
+          "format": "pdf",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_fixed_budget_ranking.pdf",
+          "sha256": "637b2847c1e051b4cc81f6860da41626d918d546c42559de0f857dc2b670ae0e",
+          "stem": "fig_v2_fixed_budget_ranking"
+        },
+        {
+          "bytes": 132160,
+          "format": "png",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_fixed_budget_ranking.png",
+          "sha256": "1b259beba16dc29011c472b97dd1babb88dbdefa484a36bcb99c7927e94dd2ce",
+          "stem": "fig_v2_fixed_budget_ranking"
+        },
+        {
+          "bytes": 34994,
+          "format": "pdf",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_hetero_and_precision_audit.pdf",
+          "sha256": "000ea719d6573bfbc6591698955db48e9d5b281575a49f1937b428842b0058ae",
+          "stem": "fig_v2_hetero_and_precision_audit"
+        },
+        {
+          "bytes": 144374,
+          "format": "png",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_hetero_and_precision_audit.png",
+          "sha256": "7b12b07fe214ac8a8420e15f3edbf3779e7c939e4596b0d5ce6b7357249330c1",
+          "stem": "fig_v2_hetero_and_precision_audit"
+        },
+        {
+          "bytes": 29797,
+          "format": "pdf",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_matched_branch_controls.pdf",
+          "sha256": "78e5c23d4047c59fe7f463f51e318b240df5d12285f6e35b4d439a017dd73b53",
+          "stem": "fig_v2_matched_branch_controls"
+        },
+        {
+          "bytes": 161958,
+          "format": "png",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_matched_branch_controls.png",
+          "sha256": "b60b61ce26fa8b70d84ed2c04ecf90efbf5445546a1f687c83fa7c0f2ed5932d",
+          "stem": "fig_v2_matched_branch_controls"
+        },
+        {
+          "bytes": 47759,
+          "format": "pdf",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_scalability_sparse_dense.pdf",
+          "sha256": "ec2e371f895f216ef79e53975bdbe6955b67b18aad063de5be5cf0badb62ce79",
+          "stem": "fig_v2_scalability_sparse_dense"
+        },
+        {
+          "bytes": 376755,
+          "format": "png",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_scalability_sparse_dense.png",
+          "sha256": "bb9f0b514ac69ee40984ab8405c90b92616cd4ec8c70f8c066a53ac591a01bd1",
+          "stem": "fig_v2_scalability_sparse_dense"
+        },
+        {
+          "bytes": 56042,
+          "format": "pdf",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_w_self_diagnosis.pdf",
+          "sha256": "b14ae7fc35752cf9176c660e7013b5917d95636073dbed35447ae51371e15551",
+          "stem": "fig_v2_w_self_diagnosis"
+        },
+        {
+          "bytes": 286179,
+          "format": "png",
+          "path": "results/paper_v2/elsevier_paper1/figures/fig_v2_w_self_diagnosis.png",
+          "sha256": "d6b20ce6c8a50416bfdd5a6395e328da532d44d5ff95b60d7a787678833469ac",
+          "stem": "fig_v2_w_self_diagnosis"
+        }
+      ],
+      "tables": [
+        {
+          "bytes": 2542,
+          "name": "table_v2_bracket_tightness.tex",
+          "path": "results/paper_v2/elsevier_paper1/tables/table_v2_bracket_tightness.tex",
+          "sha256": "e99c81f150e764f643cfca41dc6ac17dfe026fd4ac1a73b71e08f0496f24b23c"
+        },
+        {
+          "bytes": 2691,
+          "name": "table_v2_certified_screening.tex",
+          "path": "results/paper_v2/elsevier_paper1/tables/table_v2_certified_screening.tex",
+          "sha256": "4e608f66645329a3613488c36f37f17f6683389537f193843631f933aefdde56"
+        },
+        {
+          "bytes": 1999,
+          "name": "table_v2_comparator_ranking.tex",
+          "path": "results/paper_v2/elsevier_paper1/tables/table_v2_comparator_ranking.tex",
+          "sha256": "fa590144f95b1e00bde58d6b75db0b8647b86dc230067d223c52ee52ea28594d"
+        },
+        {
+          "bytes": 1632,
+          "name": "table_v2_domain_cases.tex",
+          "path": "results/paper_v2/elsevier_paper1/tables/table_v2_domain_cases.tex",
+          "sha256": "cfbd335d3629921b71b73812c620512f72affa3a1a03e4e417e0a374d1d7c88a"
+        },
+        {
+          "bytes": 2200,
+          "name": "table_v2_hetero_and_audits.tex",
+          "path": "results/paper_v2/elsevier_paper1/tables/table_v2_hetero_and_audits.tex",
+          "sha256": "14e43a8e08885c7f5bb5f0e420406708fb695b88b637d2e14d9d74ec1e1a8374"
+        },
+        {
+          "bytes": 1815,
+          "name": "table_v2_inventory_and_assertions.tex",
+          "path": "results/paper_v2/elsevier_paper1/tables/table_v2_inventory_and_assertions.tex",
+          "sha256": "6e9f2840f2c85207123672e1a0dea3810f0ce3c278a67d88ea54155da446d87a"
+        },
+        {
+          "bytes": 2847,
+          "name": "table_v2_scalability.tex",
+          "path": "results/paper_v2/elsevier_paper1/tables/table_v2_scalability.tex",
+          "sha256": "9a1570ec25d81f22db3c0bab93168e1e72af27c0161e2bdcabbb75084f9cf25c"
+        }
+      ]
+    },
+    "thesis": {
+      "figures": [
+        {
+          "bytes": 31501,
+          "format": "pdf",
+          "path": "results/paper_v2/thesis/figures/fig_v2_bracket_tightness.pdf",
+          "sha256": "1fcdf1b726f485991a393f080c2db7093e42e1a875d414c221aa80c3e9c47c87",
+          "stem": "fig_v2_bracket_tightness"
+        },
+        {
+          "bytes": 174347,
+          "format": "png",
+          "path": "results/paper_v2/thesis/figures/fig_v2_bracket_tightness.png",
+          "sha256": "8119b19208027a287c4c83605abf8041360f9a46b20c8eb16485c5b867bd9ff7",
+          "stem": "fig_v2_bracket_tightness"
+        },
+        {
+          "bytes": 39874,
+          "format": "pdf",
+          "path": "results/paper_v2/thesis/figures/fig_v2_certified_screening.pdf",
+          "sha256": "a6c5523570878431eb3cb29dd8857fc527dc9bb8577c0f2c170abe2dfc036300",
+          "stem": "fig_v2_certified_screening"
+        },
+        {
+          "bytes": 291091,
+          "format": "png",
+          "path": "results/paper_v2/thesis/figures/fig_v2_certified_screening.png",
+          "sha256": "4086c2887a1ea1d3a576f9f06a8f8caad5430bc12a01ecf1646d9855c84da2e4",
+          "stem": "fig_v2_certified_screening"
+        },
+        {
+          "bytes": 38081,
+          "format": "pdf",
+          "path": "results/paper_v2/thesis/figures/fig_v2_domain_synthesis.pdf",
+          "sha256": "c502db1ad8c602a84cdf95a28e4b71252a5e74426d9f36347b3f0fe53e7bfc9d",
+          "stem": "fig_v2_domain_synthesis"
+        },
+        {
+          "bytes": 225701,
+          "format": "png",
+          "path": "results/paper_v2/thesis/figures/fig_v2_domain_synthesis.png",
+          "sha256": "7d110c24f558d538c2adaf40ef6edcce5e55293f963fec1de88536a249c70108",
+          "stem": "fig_v2_domain_synthesis"
+        },
+        {
+          "bytes": 35563,
+          "format": "pdf",
+          "path": "results/paper_v2/thesis/figures/fig_v2_fixed_budget_ranking.pdf",
+          "sha256": "c7ada82f44d0b30df378a49f83c5f83d07f017b2f0519c6838f04460b39cea57",
+          "stem": "fig_v2_fixed_budget_ranking"
+        },
+        {
+          "bytes": 146703,
+          "format": "png",
+          "path": "results/paper_v2/thesis/figures/fig_v2_fixed_budget_ranking.png",
+          "sha256": "9a52decb29b052893615894fe2b98869d2f2175a1c78719f098e6244d8330d1a",
+          "stem": "fig_v2_fixed_budget_ranking"
+        },
+        {
+          "bytes": 34827,
+          "format": "pdf",
+          "path": "results/paper_v2/thesis/figures/fig_v2_hetero_and_precision_audit.pdf",
+          "sha256": "f0f037ff77158d5283a83db610a002509637dc7ca78c3d648f1f3ce9a81559e4",
+          "stem": "fig_v2_hetero_and_precision_audit"
+        },
+        {
+          "bytes": 148170,
+          "format": "png",
+          "path": "results/paper_v2/thesis/figures/fig_v2_hetero_and_precision_audit.png",
+          "sha256": "e5b5f45438a5178af12944024294daf08dd5175cb9b5a82ec09d75a8c07c989e",
+          "stem": "fig_v2_hetero_and_precision_audit"
+        },
+        {
+          "bytes": 29766,
+          "format": "pdf",
+          "path": "results/paper_v2/thesis/figures/fig_v2_matched_branch_controls.pdf",
+          "sha256": "97743249c35ee65472b36b3765017478809c0f33ac1af708ac20094929d9aea2",
+          "stem": "fig_v2_matched_branch_controls"
+        },
+        {
+          "bytes": 165417,
+          "format": "png",
+          "path": "results/paper_v2/thesis/figures/fig_v2_matched_branch_controls.png",
+          "sha256": "9b8cc2e3517bdaa81e195220b16fb38ae277ab2a8524544344a48ab9bb084bb4",
+          "stem": "fig_v2_matched_branch_controls"
+        },
+        {
+          "bytes": 47876,
+          "format": "pdf",
+          "path": "results/paper_v2/thesis/figures/fig_v2_scalability_sparse_dense.pdf",
+          "sha256": "77b886ee43619cb1cb6d7956c7822f1fad6a3efc9d08d2f65b9ed62475207a9c",
+          "stem": "fig_v2_scalability_sparse_dense"
+        },
+        {
+          "bytes": 373305,
+          "format": "png",
+          "path": "results/paper_v2/thesis/figures/fig_v2_scalability_sparse_dense.png",
+          "sha256": "66b1948c3a2c2d0de4e2172acb942a981e2ec96ca3bbd51da0785daca78e4d2a",
+          "stem": "fig_v2_scalability_sparse_dense"
+        },
+        {
+          "bytes": 53559,
+          "format": "pdf",
+          "path": "results/paper_v2/thesis/figures/fig_v2_w_self_diagnosis.pdf",
+          "sha256": "c4c2cc9e49f99119c1d538354e2e15ce16a03d1576911fc3be7c4f8117f737de",
+          "stem": "fig_v2_w_self_diagnosis"
+        },
+        {
+          "bytes": 281264,
+          "format": "png",
+          "path": "results/paper_v2/thesis/figures/fig_v2_w_self_diagnosis.png",
+          "sha256": "ae40bf38a98a5c1d27b8fd9ff7a872d4ca786101dcab26b35b529054abfc4cff",
+          "stem": "fig_v2_w_self_diagnosis"
+        }
+      ],
+      "tables": [
+        {
+          "bytes": 2535,
+          "name": "table_v2_bracket_tightness.tex",
+          "path": "results/paper_v2/thesis/tables/table_v2_bracket_tightness.tex",
+          "sha256": "32fe2aedda548bf492a63fa2dd2569a3abc609fdfc20deccb4b346664ecfe8b0"
+        },
+        {
+          "bytes": 2684,
+          "name": "table_v2_certified_screening.tex",
+          "path": "results/paper_v2/thesis/tables/table_v2_certified_screening.tex",
+          "sha256": "4e9eb21891caa9ee301de785408adc688ab17935dfc3f713b7ffe8465c5e34f1"
+        },
+        {
+          "bytes": 1992,
+          "name": "table_v2_comparator_ranking.tex",
+          "path": "results/paper_v2/thesis/tables/table_v2_comparator_ranking.tex",
+          "sha256": "73d8a7c3b68374e96e727c8078cc16babb82324b23c715e87cde0b927ac124d6"
+        },
+        {
+          "bytes": 1625,
+          "name": "table_v2_domain_cases.tex",
+          "path": "results/paper_v2/thesis/tables/table_v2_domain_cases.tex",
+          "sha256": "bf9414ac23724d07519bc1423aaef5a1dca856fc298c9e3697668f009495601b"
+        },
+        {
+          "bytes": 2193,
+          "name": "table_v2_hetero_and_audits.tex",
+          "path": "results/paper_v2/thesis/tables/table_v2_hetero_and_audits.tex",
+          "sha256": "9e53ffa7f5774a5aa706c4d14e3f9b9515acaac5c3880cce0665aeb88d68e109"
+        },
+        {
+          "bytes": 1808,
+          "name": "table_v2_inventory_and_assertions.tex",
+          "path": "results/paper_v2/thesis/tables/table_v2_inventory_and_assertions.tex",
+          "sha256": "8ac485b8c3ce2880c1b9847ccb813ac5e50e0ac2b2cbe8d93821a84e332c1287"
+        },
+        {
+          "bytes": 2840,
+          "name": "table_v2_scalability.tex",
+          "path": "results/paper_v2/thesis/tables/table_v2_scalability.tex",
+          "sha256": "d6617073b69c546bfad4300d2baa9e0578048cbe2a3ea207e8ea057fdad30427"
+        }
+      ]
+    }
+  },
+  "version": "2.0.0"
+}
